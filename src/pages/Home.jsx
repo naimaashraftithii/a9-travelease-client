@@ -1,34 +1,33 @@
-import { useEffect, useState } from 'react'
-import http from '../api/http'
-import HeroSlider from '../components/HeroSlider'
+import { useQuery } from '@tanstack/react-query'
+import { fetchVehicles } from '../api/vehicles'
+import { formatDistanceToNow } from 'date-fns'
 
 export default function Home(){
-  const [status, setStatus] = useState('checking…')
-
-  useEffect(() => {
-    http.get('/')
-      .then(() => setStatus('API OK'))
-      .catch(() => setStatus('API ERROR'))
-  }, [])
-
+  const { data } = useQuery({
+    queryKey:['latest'],
+    queryFn: () => fetchVehicles({ sortBy:'createdAt', sortOrder:'desc', limit:6 })
+  })
+  // ...keep your banner/slider
   return (
     <div className="space-y-10">
-      <section className="text-center">
-        <h1 className="text-4xl font-extrabold mb-2">Book, Ride, Repeat</h1>
-        <p className="opacity-80">TravelEase – Vehicle Booking & Trip Management</p>
-        <p className="text-xs opacity-60 mt-2">Server status: {status}</p>
-      </section>
-
-      {/* Carousel */}
-      <HeroSlider />
-
-      {/* placeholder sections */}
+      {/* banner + slider here */}
       <section>
-        <h2 className="text-2xl font-bold mb-3">Latest Arrivals</h2>
+        <h2 className="text-2xl font-bold mb-4">Latest Arrivals</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="h-48 bg-neutral/10 rounded-xl" />
-          <div className="h-48 bg-neutral/10 rounded-xl" />
-          <div className="h-48 bg-neutral/10 rounded-xl" />
+          {data?.items?.map(v => (
+            <div key={v._id} className="card bg-base-200">
+              <figure className="aspect-video"><img src={v.coverImage} /></figure>
+              <div className="card-body">
+                <h3 className="card-title">{v.vehicleName}</h3>
+                <p className="text-sm opacity-80">{v.location} • {v.category}</p>
+                <p className="text-xs opacity-60">added {formatDistanceToNow(new Date(v.createdAt||v.updatedAt||Date.now()))} ago</p>
+                <div className="mt-auto flex items-center justify-between">
+                  <span className="font-semibold">${v.pricePerDay}/day</span>
+                  <a className="btn btn-sm" href={`/vehicles/${v._id}`}>View Details</a>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     </div>

@@ -1,7 +1,33 @@
+// /** @type {import('tailwindcss').Config} */
+// export default {
+//   content: ["./index.html", "./src/**/*.{js,jsx}"],
+//   theme: { extend: {} },
+//   darkMode: "class",
+//   plugins: [],
+// }
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,jsx}"],
-  theme: { extend: {} },
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+  theme: {
+    extend: {},
+  },
   darkMode: "class",
-  plugins: [],
-}
+  plugins: [require("daisyui")],
+  daisyui: {
+    themes: [
+      {
+        light: {
+          primary: "purple",
+          secondary: "teal",
+          accent: "#f97316", // orange accent for buttons
+          neutral: "#3D4451",
+          "base-100": "#ffffff",
+          info: "#3ABFF8",
+          success: "#36D399",
+          warning: "#FBBD23",
+          error: "#F87272",
+        },
+      },
+    ],
+  },
+};

@@ -2,5 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-/* optional base tweaks */
-html, body, #root { height: 100%; }
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:ital,wght@1,700;1,900&display=swap');
+
+
+/* Optional custom theme tweaks */
+:root {
+  --color-primary: purple;
+  --color-secondary: teal;
+}
+
+.h1 {
+  @apply text-4xl md:text-5xl font-extrabold;
+}
+
+.h2 {
+  @apply text-2xl md:text-3xl font-bold;
+}
+
+.muted {
+  @apply text-sm opacity-70;
+}
+
+/* Logo typography */
+.logo-word-travel {
+  font-family: "Playfair Display", ui-serif, Georgia, "Times New Roman", Times, serif;
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+.logo-word-easy {
+  font-family: "Pacifico", ui-sans-serif, system-ui;
+}
