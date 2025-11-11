@@ -1,29 +1,22 @@
+/* Google fonts for the logo text */
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@700;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:ital,wght@1,700;1,900&display=swap');
-
-
-/* Optional custom theme tweaks */
+/* Optional custom theme tokens if you want to consume them later */
 :root {
   --color-primary: purple;
   --color-secondary: teal;
 }
 
-.h1 {
-  @apply text-4xl md:text-5xl font-extrabold;
-}
+/* Utilities */
+.h1 { @apply text-4xl md:text-5xl font-extrabold; }
+.h2 { @apply text-2xl md:text-3xl font-bold; }
+.muted { @apply text-sm opacity-70; }
 
-.h2 {
-  @apply text-2xl md:text-3xl font-bold;
-}
-
-.muted {
-  @apply text-sm opacity-70;
-}
-
-/* Logo typography */
+/* Logo typography (if you ever need utility classes) */
 .logo-word-travel {
   font-family: "Playfair Display", ui-serif, Georgia, "Times New Roman", Times, serif;
   font-style: italic;
@@ -31,4 +24,20 @@
 }
 .logo-word-easy {
   font-family: "Pacifico", ui-sans-serif, system-ui;
+}
+
+/* ✅ Robust paint-in underline animation */
+.logo-underline {
+  /* matches the SVG pathLength="100" */
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset 0.8s ease-out, filter 0.3s;
+  filter:
+    drop-shadow(0 0 4px rgba(255,140,0,0.6))
+    drop-shadow(0 0 10px rgba(255,80,0,0.3));
+}
+
+/* Hover on the .group parent triggers underline draw */
+.group:hover .logo-underline {
+  stroke-dashoffset: 0 !important;
 }
