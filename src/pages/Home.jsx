@@ -1,21 +1,19 @@
-// src/pages/Home.jsx
-import { useQuery } from '@tanstack/react-query'
-import { fetchVehicles } from '../api/vehicles'
-import { formatDistanceToNow } from 'date-fns'
-import HeroBooking from '../components/HeroBooking'
-import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query';
+import { fetchVehicles } from '../api/vehicles';
+import { formatDistanceToNow } from 'date-fns';
+import HeroBooking from '../components/HeroBooking';
 
 export default function Home(){
   const { data } = useQuery({
     queryKey:['latest'],
     queryFn: () => fetchVehicles({ sortBy:'createdAt', sortOrder:'desc', limit:6 })
-  })
+  });
 
   return (
     <div className="space-y-10">
       <HeroBooking />
 
-      <section>
+      <section className="max-w-7xl mx-auto px-4">
         <h2 className="text-2xl font-bold mb-4">Latest Arrivals</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {data?.items?.map(v => (
@@ -29,7 +27,7 @@ export default function Home(){
                 </p>
                 <div className="mt-auto flex items-center justify-between">
                   <span className="font-semibold">${v.pricePerDay}/day</span>
-                  <Link className="btn btn-sm" to={`/vehicles/${v._id}`}>View Details</Link>
+                  <a className="btn btn-sm" href={`/vehicles/${v._id}`}>View Details</a>
                 </div>
               </div>
             </div>
@@ -37,5 +35,5 @@ export default function Home(){
         </div>
       </section>
     </div>
-  )
+  );
 }

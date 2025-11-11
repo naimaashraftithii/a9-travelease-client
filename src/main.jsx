@@ -1,16 +1,23 @@
-// src/main.jsx
-import { createRoot } from 'react-dom/client'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { BrowserRouter } from 'react-router-dom'
-import App from './App'
-import './index.css'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "react-hot-toast";
+import App from "./App.jsx";
+import "./index.css";
+import AuthProvider from "./context/AuthProvider.jsx";
 
-const qc = new QueryClient()
+const qc = new QueryClient();
 
-createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
     <QueryClientProvider client={qc}>
-      <App />
+      <AuthProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </AuthProvider>
+      <Toaster position="top-right" />
     </QueryClientProvider>
-  </BrowserRouter>
-)
+  </React.StrictMode>
+);
