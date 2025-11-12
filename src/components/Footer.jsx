@@ -79,7 +79,7 @@ export default function Footer() {
 
               <div className="relative leading-none select-none">
                 <span
-                  className="text-lg md:text-xl italic font-black text-slate-100 underline decoration-2 underline-offset-[6px]"
+                  className="text-lg md:text-xl italic font-black text-slate-100  decoration-2 underline-offset-[6px]"
                   style={{
                     fontFamily: "'Playfair Display', serif",
                     textDecorationColor: "#fb923c",

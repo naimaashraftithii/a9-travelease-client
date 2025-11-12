@@ -3,12 +3,10 @@ import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useSpring, animated, to as springTo } from "@react-spring/web";
 import Swal from "sweetalert2";
-import {
-  parse, format, isBefore, isValid, differenceInCalendarDays,
-} from "date-fns";
+import { parse, format, isBefore, isValid, differenceInCalendarDays } from "date-fns";
 
-const CAR_IMG =
-  "https://i.ibb.co.com/jPyZS1qS/ff2dbc0d6e519913771b5450b6304c22.jpg";
+// ✅ FIXED: correct i.ibb.co domain and keep only ONE constant and NO stray URLs below it
+const CAR_IMG = "https://i.ibb.co/jPyZS1qS/ff2dbc0d6e519913771b5450b6304c22.jpg";
 
 export default function HeroBooking() {
   // ---------- react-spring parallax for the car ----------
@@ -32,7 +30,7 @@ export default function HeroBooking() {
   const submit = (e) => {
     e.preventDefault();
 
-    // we expect dd/MM/yyyy (as shown in placeholder)
+    // expecting dd/MM/yyyy
     const parsed = parse(date, "dd/MM/yyyy", new Date());
 
     if (!name.trim() || !location.trim() || !date.trim()) {
@@ -40,15 +38,10 @@ export default function HeroBooking() {
       return;
     }
     if (!isValid(parsed)) {
-      Swal.fire({
-        icon: "error",
-        title: "Invalid date format",
-        text: "Use dd/mm/yyyy"
-      });
+      Swal.fire({ icon: "error", title: "Invalid date format", text: "Use dd/mm/yyyy" });
       return;
     }
 
-    // must not be in the past (allow today+)
     const today = new Date();
     const midnightToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const isPast = isBefore(parsed, midnightToday);
@@ -73,7 +66,9 @@ export default function HeroBooking() {
       confirmButtonColor: "#f97316",
     });
 
-    setName(""); setLocation(""); setDate("");
+    setName("");
+    setLocation("");
+    setDate("");
   };
 
   return (
@@ -201,9 +196,7 @@ export default function HeroBooking() {
               />
             </div>
 
-            <button
-              className="h-[48px] md:h-[50px] px-6 rounded-lg font-semibold bg-orange-600 hover:bg-orange-700 transition"
-            >
+            <button className="h-[48px] md:h-[50px] px-6 rounded-lg font-semibold bg-orange-600 hover:bg-orange-700 transition">
               Book a Car
             </button>
           </form>
