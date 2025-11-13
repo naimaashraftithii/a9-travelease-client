@@ -11,12 +11,12 @@ export default function MyBookings() {
   const { user } = useAuth();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["myBookings", user?.email],
-    enabled: !!user?.email, // wait for user.email
-    queryFn: () => myBookings(user.email),
+    queryKey: ["myBookings"],
+    enabled: !!user,          // only run if logged in
+    queryFn: myBookings,      // ✅ no args
   });
 
-  if (!user?.email) {
+  if (!user) {
     return (
       <div className="py-10 text-center">
         Please login to see your bookings.
@@ -43,7 +43,6 @@ export default function MyBookings() {
 
   return (
     <div className="space-y-4">
-      {/* Heading consistent with other sections */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h1 className="text-2xl md:text-3xl font-bold">
           My <span className="text-primary">Bookings</span>
@@ -56,17 +55,14 @@ export default function MyBookings() {
 
       {list.length === 0 && (
         <p className="text-sm opacity-70">
-          No bookings found yet. Go to{" "}
-          <span className="font-semibold">All Vehicles</span> and request a
-          ride.
+          No bookings found yet. Go to All Vehicles and request a ride.
         </p>
       )}
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {list.map((b, idx) => {
           const v = b.vehicle || {};
-          const created =
-            b.createdAt || b.date || b.created_at || null; // tolerate different names
+          const created = b.createdAt;
 
           let prettyDate = "";
           try {
@@ -114,16 +110,14 @@ export default function MyBookings() {
                           : "text-yellow-400 font-semibold"
                       }
                     >
-                      {b.status || "requested"}
+                      {b.status || "Interested"}
                     </span>
                     {prettyDate && ` · ${prettyDate}`}
                   </p>
                 </div>
 
-                {/* Optional status badge area or future actions */}
                 <div className="mt-3 flex items-center justify-between text-xs opacity-70">
                   <span>Booking ID: {b._id.slice(-6)}</span>
-                  {b.bookingType && <span>{b.bookingType}</span>}
                 </div>
               </div>
             </motion.div>

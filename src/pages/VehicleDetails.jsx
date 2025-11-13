@@ -6,12 +6,12 @@ import { createBooking } from "../api/bookings";
 import Loader from "../components/Loader";
 import { safeImg } from "../utils/images";
 import { alertSuccess, alertError } from "../lib/alert";
-import { useAuth } from "../context/AuthContext";   // 🆕 get user
+import { useAuth } from "../context/AuthContext";
 
 export default function VehicleDetails() {
   const { id } = useParams();
   const qc = useQueryClient();
-  const { user } = useAuth();                       // 🆕
+  const { user } = useAuth();
 
   const { data: vehicle, isLoading, error } = useQuery({
     queryKey: ["vehicle", id],
@@ -22,7 +22,7 @@ export default function VehicleDetails() {
     mutationFn: (payload) => createBooking(payload),
     onSuccess: async () => {
       await alertSuccess("Ride requested successfully!");
-      // invalidate all queries that start with ["myBookings"]
+      // refetch bookings after a successful booking
       qc.invalidateQueries({ queryKey: ["myBookings"] });
     },
     onError: (e) => {
@@ -32,18 +32,15 @@ export default function VehicleDetails() {
 
   const handleBook = async () => {
     if (!vehicle?._id) return;
-
-    if (!user?.email) {
-      alertError("You must be logged in to book a vehicle.");
+    if (!user) {
+      alertError("You must be logged in to book a ride.");
       return;
     }
 
     try {
       await book({
-        vehicleId: vehicle._id,
-        status: "requested",
-        email: user.email,      // 🆕 for servers expecting `email`
-        userEmail: user.email,  // 🆕 for servers expecting `userEmail`
+        vehicleId: vehicle._id,  // ✅ backend expects this
+        status: "Interested",    // or "requested"
       });
     } catch {
       // error handled in onError
