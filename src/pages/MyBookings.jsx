@@ -11,10 +11,10 @@ export default function MyBookings() {
   const { user } = useAuth();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["myBookings"],
-    enabled: !!user,          // only run if logged in
-    queryFn: myBookings,      // ✅ no args
-  });
+  queryKey: ["myBookings"],
+  queryFn: myBookings,   // <--- this calls http.get("/my-bookings")
+});
+
 
   if (!user) {
     return (

@@ -1,8 +1,8 @@
 // src/components/CarouselTwo.jsx
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
-// === Dynamic car data ===
+// === Car data with individual images ===
 const CAR_TYPES = [
   { name: "Family MPV", count: 1, color: "#4ADE80", img: "https://i.ibb.co/5Kk4G8R/family-car.jpg" },
   { name: "Pickup", count: 3, color: "#F87171", img: "https://i.ibb.co/TvWf6B1/pickup.jpg" },
@@ -16,12 +16,11 @@ const CAR_TYPES = [
 ];
 
 const GROUP_SIZE = 3;
-const SLIDES = CAR_TYPES.reduce((acc, _, idx, arr) => {
-  if (idx % GROUP_SIZE === 0) acc.push(arr.slice(idx, idx + GROUP_SIZE));
+const SLIDES = CAR_TYPES.reduce((acc, _, i, arr) => {
+  if (i % GROUP_SIZE === 0) acc.push(arr.slice(i, i + GROUP_SIZE));
   return acc;
 }, []);
 
-// === Car Icon (gradient-filled SVG) ===
 function CarIcon({ color }) {
   return (
     <svg
@@ -47,186 +46,102 @@ function CarIcon({ color }) {
 
 export default function CarouselTwo() {
   const [i, setI] = useState(0);
-  const timerRef = useRef(null);
-
-  const next = () => setI((p) => (p + 1) % SLIDES.length);
-  const prev = () => setI((p) => (p - 1 + SLIDES.length) % SLIDES.length);
+  const timer = useRef(null);
+  const next = () => setI(p => (p + 1) % SLIDES.length);
+  const prev = () => setI(p => (p - 1 + SLIDES.length) % SLIDES.length);
 
   useEffect(() => {
-    timerRef.current = setInterval(next, 5000);
-    return () => clearInterval(timerRef.current);
+    timer.current = setInterval(next, 4000);
+    return () => clearInterval(timer.current);
   }, []);
 
   return (
-    <section className="relative py-20 overflow-hidden bg-gradient-to-b from-white via-indigo-50/60 to-pink-50/60">
-      {/* === Animated gradient background === */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-pink-500 to-yellow-400 opacity-30 blur-3xl"
-        animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-        style={{ backgroundSize: "300% 300%" }}
-      />
-
-      <div className="max-w-6xl mx-auto px-4 relative">
-        {/* === Title === */}
+    <section className="py-16 bg-gradient-to-b from-white to-slate-50">
+      <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-12">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3"
-          >
+          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">
             Most Popular{" "}
-            <motion.span
-              animate={{
-                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-              }}
-              transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-              className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-pink-500 to-orange-400 bg-[length:200%_200%]"
-            >
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-pink-500">
               Car Types
-            </motion.span>
-          </motion.h2>
-
-          <motion.div
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
-            className="flex justify-center mb-4"
-          >
-            <svg width="120" height="16" viewBox="0 0 120 16">
-              <path
-                d="M5 12 Q60 0 115 12"
-                fill="none"
-                stroke="#f97316"
-                strokeWidth="3"
-                strokeLinecap="round"
-              />
-            </svg>
-          </motion.div>
-
-          <p className="max-w-xl mx-auto text-slate-600 text-sm md:text-base">
-            Explore the most sought-after car categories known for their comfort,
-            performance, and innovation.
+            </span>
+          </h2>
+          <p className="max-w-xl mx-auto text-slate-500 text-sm md:text-base">
+            Explore the most sought-after car categories known for comfort and performance.
           </p>
         </div>
 
-        {/* === Carousel === */}
         <div className="relative">
-          <div className="overflow-hidden rounded-3xl bg-white/80 backdrop-blur-lg shadow-lg ring-1 ring-slate-100">
+          <div className="overflow-hidden rounded-3xl bg-white/70 backdrop-blur shadow-lg ring-1 ring-slate-100">
             <div
               className="flex transition-transform duration-700 ease-out"
               style={{ transform: `translateX(-${i * 100}%)` }}
             >
               {SLIDES.map((slide, idx) => (
-                <div key={idx} className="min-w-full relative">
-                  {/* background image with dynamic opacity */}
-                  <motion.img
-                    src={slide[0].img}
-                    alt="Car background"
-                    className="absolute inset-0 w-full h-full object-cover opacity-30"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.3 }}
-                    transition={{ duration: 0.6 }}
-                    loading="lazy"
-                  />
-                  <div className="relative grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-                    {slide.map((item) => (
-                      <motion.div
-                        key={item.name}
-                        whileHover={{ scale: 1.08, y: -8 }}
-                        transition={{ type: "spring", stiffness: 250 }}
-                        className="relative border border-transparent group py-10 px-6 cursor-pointer"
-                      >
-                        <motion.div
-                          className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-200/40 via-pink-100/30 to-transparent opacity-0 group-hover:opacity-100 transition-all"
-                          animate={{
-                            backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-                          }}
-                          transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
-                          style={{ backgroundSize: "200% 200%" }}
-                        />
-                        <div className="relative text-center">
-                          <motion.div
-                            whileHover={{ rotate: 8 }}
-                            transition={{ duration: 0.3 }}
-                          >
-                            <CarIcon color={item.color} />
-                          </motion.div>
-                          <h3 className="font-bold text-lg md:text-xl text-slate-900 drop-shadow-sm">
-                            {item.name}
-                          </h3>
-                          <p className="text-xs text-slate-600 mt-1">
-                            {item.count} {item.count === 1 ? "Car" : "Cars"}
-                          </p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
+                <div key={idx} className="min-w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+                  {slide.map(car => (
+                    <motion.div
+                      key={car.name}
+                      whileHover={{ scale: 1.06 }}
+                      transition={{ type: "spring", stiffness: 250 }}
+                      className="relative overflow-hidden rounded-2xl m-2 shadow group cursor-pointer"
+                    >
+                      <img
+                        src={car.img}
+                        alt={car.name}
+                        className="absolute inset-0 w-full h-full object-cover opacity-25 group-hover:opacity-40 transition-all"
+                      />
+                      <div className="relative text-center py-12 px-6">
+                        <motion.div whileHover={{ rotate: 5 }} transition={{ duration: 0.3 }}>
+                          <CarIcon color={car.color} />
+                        </motion.div>
+                        <h3 className="font-bold text-lg md:text-xl text-slate-900 drop-shadow-sm">
+                          {car.name}
+                        </h3>
+                        <p className="text-xs text-slate-600 mt-1">
+                          {car.count} {car.count === 1 ? "Car" : "Cars"}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               ))}
             </div>
 
-            {/* === Buttons === */}
-            <motion.button
+            <button
               onClick={prev}
-              whileTap={{ scale: 0.9 }}
-              whileHover={{
-                background:
-                  "linear-gradient(to right, #6366F1, #EC4899)",
-                color: "#fff",
-                scale: 1.1,
-              }}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center transition-all"
+              aria-label="Previous"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white shadow flex items-center justify-center hover:scale-110 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-pink-500 hover:text-white transition-all"
             >
               ❮
-            </motion.button>
-            <motion.button
+            </button>
+            <button
               onClick={next}
-              whileTap={{ scale: 0.9 }}
-              whileHover={{
-                background:
-                  "linear-gradient(to right, #EC4899, #6366F1)",
-                color: "#fff",
-                scale: 1.1,
-              }}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center transition-all"
+              aria-label="Next"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-10 h-10 rounded-full bg-white shadow flex items-center justify-center hover:scale-110 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-pink-500 hover:text-white transition-all"
             >
               ❯
-            </motion.button>
+            </button>
           </div>
 
-          {/* === Dots === */}
           <div className="flex justify-center gap-2 mt-5">
             {SLIDES.map((_, idx) => (
-              <motion.button
+              <button
                 key={idx}
                 onClick={() => setI(idx)}
-                animate={{
-                  width: i === idx ? 24 : 10,
-                  backgroundColor:
-                    i === idx ? "#6366F1" : "rgba(203,213,225,0.9)",
-                }}
-                transition={{ duration: 0.3 }}
-                className="h-2.5 rounded-full"
+                className={`h-2.5 rounded-full transition-all ${
+                  i === idx
+                    ? "w-6 bg-gradient-to-r from-indigo-500 to-pink-500"
+                    : "w-2.5 bg-slate-300"
+                }`}
               />
             ))}
           </div>
         </div>
 
-        {/* === Bottom Button === */}
         <div className="mt-10 flex justify-center">
-          <motion.button
-            whileHover={{
-              scale: 1.07,
-              background: "linear-gradient(to right, #EC4899, #6366F1)",
-              boxShadow: "0 0 20px rgba(236,72,153,0.5)",
-            }}
-            transition={{ duration: 0.3 }}
-            className="px-6 py-2 border border-transparent bg-gradient-to-r from-indigo-500 to-pink-500 text-white rounded-full text-sm font-semibold shadow-md"
-          >
+          <button className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-pink-500 text-white rounded-full text-sm font-semibold hover:from-pink-500 hover:to-indigo-500 shadow-md transition-all hover:shadow-lg">
             View all Cars →
-          </motion.button>
+          </button>
         </div>
       </div>
     </section>
