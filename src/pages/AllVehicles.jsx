@@ -5,6 +5,7 @@ import { fetchVehicles } from "../api/vehicles";
 import Loader from "../components/Loader";
 import VehicleCard from "../components/VehicleCard";
 
+
 export default function AllVehicles() {
   const [filters, setFilters] = useState({
     category: "",
@@ -16,9 +17,9 @@ export default function AllVehicles() {
   });
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["vehicles", filters],
-    queryFn: () => fetchVehicles(filters),
-  });
+  queryKey: ["vehicles", filters],
+  queryFn: () => fetchVehicles(filters),
+});
 
   const onChange = (k, v) =>
     setFilters((s) => ({

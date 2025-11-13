@@ -3,22 +3,19 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
-import {
-  fetchTopVehicles,
-  fetchLatestVehicles,
-} from "../api/vehicles";
+import { fetchTopVehicles, fetchLatestVehicles } from "../api/vehicles";
 import Loader from "../components/Loader";
 import OurServices from "../components/OurServices";
 import OurTestimonial from "../components/OurTestimonial";
 import CarouselOne from "../components/CarouselOne";
 import CarouselTwo from "../components/CarouselTwo";
 import HeroBooking from "../components/HeroBooking";
-import { safeImg } from "../utils/images"; // ← make sure this file exports safeImg
+import { safeImg } from "../utils/safeImg";
 
 export default function Home() {
   const [filter, setFilter] = useState("latest");
 
-  // 🔹 latest 6 vehicles (uses GET /latest-vehicles)
+  // 🔹 Latest 6 vehicles
   const {
     data: latestData,
     isLoading: loadingLatest,
@@ -28,7 +25,7 @@ export default function Home() {
     queryFn: fetchLatestVehicles,
   });
 
-  // 🔹 top vehicles by bookings (uses GET /stats/top-vehicles?limit=3)
+  // 🔹 Top vehicles by bookings
   const {
     data: topData,
     isLoading: loadingTop,
@@ -53,12 +50,12 @@ export default function Home() {
 
   return (
     <>
-      {/* Hero + carousels ALWAYS render */}
+      {/* Hero + carousels always visible */}
       <HeroBooking />
       <CarouselOne />
 
       <main className="max-w-7xl mx-auto px-4 py-10 space-y-12">
-        {/*  🔹 Top Vehicles Section (with filter buttons) */}
+        {/* 🔹 Top Vehicles Section */}
         <section>
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <h2 className="text-2xl font-bold">Top Vehicles</h2>
@@ -158,7 +155,8 @@ export default function Home() {
           )}
         </section>
 
-        <OurServices/>
+        {/* Extra sections */}
+        <OurServices />
         <CarouselTwo />
         <OurTestimonial />
       </main>
