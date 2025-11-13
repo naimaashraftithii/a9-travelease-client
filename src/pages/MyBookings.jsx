@@ -1,7 +1,8 @@
 // src/pages/MyBookings.jsx
 import { useQuery } from '@tanstack/react-query'
 import { myBookings } from '../api/bookings'
-import toast from 'react-hot-toast'
+import { safeImg } from '../utils/images'
+import Loader from '../components/Loader'
 
 export default function MyBookings() {
   const { data, isLoading, error } = useQuery({
@@ -9,13 +10,10 @@ export default function MyBookings() {
     queryFn: myBookings,
   })
 
-  if (isLoading) return <div className="text-center py-10">Loading...</div>
-  if (error) {
-    toast.error(error.message)
-    return <div className="text-center py-10">Error loading bookings</div>
-  }
+  if (isLoading) return <Loader />
+  if (error) return <div className="text-center py-10">Error loading bookings</div>
 
-  const list = data || []
+  const list = Array.isArray(data) ? data : []
 
   return (
     <div>
@@ -30,18 +28,16 @@ export default function MyBookings() {
           <div key={b._id} className="card bg-base-200 h-full">
             <figure className="aspect-video">
               <img
-                src={b.vehicle?.coverImage}
-                alt={b.vehicle?.vehicleName}
+                src={safeImg(b?.vehicle?.coverImage)}
+                alt={b?.vehicle?.vehicleName || 'Vehicle'}
                 className="w-full h-full object-cover"
               />
             </figure>
             <div className="card-body">
-              <h3 className="card-title">{b.vehicle?.vehicleName}</h3>
-              <p className="text-sm opacity-80">{b.vehicle?.category}</p>
-              <p className="text-sm opacity-70">Location: {b.vehicle?.location}</p>
-              <p className="text-sm font-semibold text-primary">
-                Status: {b.status}
-              </p>
+              <h3 className="card-title">{b?.vehicle?.vehicleName}</h3>
+              <p className="text-sm opacity-80">{b?.vehicle?.category}</p>
+              <p className="text-sm opacity-70">Location: {b?.vehicle?.location}</p>
+              <p className="text-sm font-semibold text-primary">Status: {b?.status}</p>
             </div>
           </div>
         ))}

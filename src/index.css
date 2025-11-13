@@ -5,39 +5,66 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Optional custom theme tokens if you want to consume them later */
+/* your custom CSS utilities can follow */
+
+
 :root {
   --color-primary: purple;
   --color-secondary: teal;
 }
 
-/* Utilities */
 .h1 { @apply text-4xl md:text-5xl font-extrabold; }
 .h2 { @apply text-2xl md:text-3xl font-bold; }
 .muted { @apply text-sm opacity-70; }
 
-/* Logo typography (if you ever need utility classes) */
 .logo-word-travel {
   font-family: "Playfair Display", ui-serif, Georgia, "Times New Roman", Times, serif;
-  font-style: italic;
-  letter-spacing: 0.02em;
+  font-style: italic; letter-spacing: 0.02em;
 }
-.logo-word-easy {
-  font-family: "Pacifico", ui-sans-serif, system-ui;
-}
+.logo-word-easy { font-family: "Pacifico", ui-sans-serif, system-ui; }
 
-/* ✅ Robust paint-in underline animation */
 .logo-underline {
-  /* matches the SVG pathLength="100" */
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
+  stroke-dasharray: 100; stroke-dashoffset: 100;
   transition: stroke-dashoffset 0.8s ease-out, filter 0.3s;
-  filter:
-    drop-shadow(0 0 4px rgba(255,140,0,0.6))
-    drop-shadow(0 0 10px rgba(255,80,0,0.3));
+  filter: drop-shadow(0 0 4px rgba(255,140,0,0.6)) drop-shadow(0 0 10px rgba(255,80,0,0.3));
 }
 
-/* Hover on the .group parent triggers underline draw */
-.group:hover .logo-underline {
-  stroke-dashoffset: 0 !important;
+.group:hover .logo-underline { stroke-dashoffset: 0 !important; }
+
+
+
+/* Gradient button utilities */
+.btn-grad {
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-md font-semibold text-white transition-[background-position,transform,opacity] duration-300 active:scale-[.98];
+  background-image: linear-gradient(90deg, #fc466b 0%, #3f5efb 100%);
+  background-size: 200% 100%;
+  background-position: 0% 0%;
+}
+.btn-grad:hover { background-position: 100% 0%; }
+
+.btn-grad-2 {
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-md font-semibold text-white transition-[background-position,transform,opacity] duration-300 active:scale-[.98];
+  background-image: linear-gradient(90deg, #00f260 0%, #0575e6 100%);
+  background-size: 200% 100%;
+  background-position: 0% 0%;
+}
+.btn-grad-2:hover { background-position: 100% 0%; }
+
+/* pretty gradient buttons used in Home */
+.btn-grad {
+  @apply inline-flex items-center gap-2 px-4 py-2 rounded-md text-white transition;
+  background-image: linear-gradient(90deg, #fc466b 0%, #3f5efb 100%);
+}
+.btn-grad:hover { filter: brightness(1.05); }
+
+.btn-grad-2 {
+  @apply inline-flex items-center gap-2 px-4 py-2 rounded-md text-white transition;
+  background-image: linear-gradient(90deg, #00f260 0%, #0575e6 100%);
+}
+.btn-grad-2:hover { filter: brightness(1.05); }
+
+
+@layer utilities {
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px) scale(.98);} to {opacity:1; transform: translateY(0) scale(1);} }
+  @keyframes popIn  { from { opacity: 0; transform: scale(.95) rotate(-2deg);} to {opacity:1; transform: scale(1) rotate(0);} }
 }

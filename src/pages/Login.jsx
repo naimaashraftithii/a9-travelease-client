@@ -1,38 +1,37 @@
-// src/pages/Login.jsx
-import { useState } from 'react'
-import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthProvider'
-import { alertSuccess, alertError } from '../lib/alert'
+import { useState } from 'react';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useAuth } from "../context/AuthContext.js";
+import { alertSuccess, alertError } from '../lib/alert';
 
 export default function Login(){
-  const { loginEmail, loginGoogle } = useAuth()
-  const nav = useNavigate()
-  const loc = useLocation()
-  const from = loc.state?.from?.pathname || '/'
+  const { loginEmail, loginGoogle } = useAuth();
+  const nav = useNavigate();
+  const loc = useLocation();
+  const from = loc.state?.from?.pathname || '/';
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const onSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      await loginEmail(email, password)
-      await alertSuccess('Welcome back!')
-      nav(from, { replace: true })
+      await loginEmail(email, password);
+      await alertSuccess('Welcome back!');
+      nav(from, { replace: true });
     } catch (e) {
-      alertError('Login failed', e.message)
+      alertError('Login failed', e.message);
     }
-  }
+  };
 
   const onGoogle = async () => {
     try {
-      await loginGoogle()
-      await alertSuccess('Logged in with Google')
-      nav(from, { replace: true })
+      await loginGoogle();
+      await alertSuccess('Logged in with Google');
+      nav(from, { replace: true });
     } catch (e) {
-      alertError('Google sign-in failed', e.message)
+      alertError('Google sign-in failed', e.message);
     }
-  }
+  };
 
   return (
     <div className="max-w-md mx-auto">
@@ -42,11 +41,11 @@ export default function Login(){
                value={email} onChange={e=>setEmail(e.target.value)} />
         <input className="input input-bordered w-full" placeholder="Password" type="password"
                value={password} onChange={e=>setPassword(e.target.value)} />
-        <div className="text-right text-sm opacity-70">Forget Password (skip as per brief)</div>
+        <div className="text-right text-sm opacity-70">Forget Password (skip for now)</div>
         <button className="btn btn-primary w-full">Login</button>
         <button type="button" onClick={onGoogle} className="btn w-full">Continue with Google</button>
         <p className="text-sm">No account? <Link to="/register" className="underline">Register</Link></p>
       </form>
     </div>
-  )
+  );
 }

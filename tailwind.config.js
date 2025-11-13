@@ -1,26 +1,18 @@
-// tailwind.config.js
-// export default {
-//   darkMode: "class",
-//   content: ["./index.html", "./src/**/*.{js,jsx}"],
-//   theme: { extend: {} },
-//   plugins: [],
-// }
+/** @type {import('tailwindcss').Config} */
+import daisyui from "daisyui";
 
-// /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
-  theme: {
-    extend: {},
-  },
+  theme: { extend: {} },
   darkMode: "class",
-  plugins: [require("daisyui")],
+  plugins: [daisyui],
   daisyui: {
     themes: [
       {
         light: {
           primary: "purple",
           secondary: "teal",
-          accent: "#f97316", // orange accent for buttons
+          accent: "#f97316",
           neutral: "#3D4451",
           "base-100": "#ffffff",
           info: "#3ABFF8",

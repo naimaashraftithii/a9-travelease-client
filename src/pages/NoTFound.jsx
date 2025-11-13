@@ -17,28 +17,18 @@ export default function NotFound() {
         </motion.div>
 
         <motion.h1
-          className="text-xl md:text-2xl font-semibold text-slate-800 dark:text-slate-100"
+          className="text-xl md:text-2xl font-semibold"
           initial={{ y: 8, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.1 }}
         >
-          We couldn’t find that page.
+          We couldn't find that page.
         </motion.h1>
-
-        <motion.p
-          className="mt-2 text-slate-600 dark:text-slate-300"
-          initial={{ y: 6, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.18 }}
-        >
-          It may have been moved, deleted, or never existed.
-        </motion.p>
 
         <motion.div
           className="mt-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.26 }}
+          transition={{ delay: 0.25 }}
         >
           <Link
             to="/"

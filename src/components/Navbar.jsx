@@ -1,8 +1,9 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthProvider";
 import { useEffect, useState } from "react";
+
+import { useAuth } from "../context/AuthContext.js";
 import { confirm, alertSuccess } from "../lib/alert";
-import logoImg from "../assets/logo2.png"; // ensure this exists
+import logoImg from "../assets/logo2.png";
 
 const menuItems = [
   { to: "/", label: "Home" },

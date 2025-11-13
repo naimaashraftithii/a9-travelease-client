@@ -1,27 +1,26 @@
-// src/pages/Register.jsx
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthProvider'
-import { alertSuccess, alertError } from '../lib/alert'
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from "../context/AuthContext.js";
+import { alertSuccess, alertError } from '../lib/alert';
 
-const valid = (p) => /[A-Z]/.test(p) && /[a-z]/.test(p) && p.length >= 6
+const valid = (p) => /[A-Z]/.test(p) && /[a-z]/.test(p) && p.length >= 6;
 
 export default function Register(){
-  const nav = useNavigate()
-  const { registerEmail } = useAuth()
-  const [form, setForm] = useState({ name:'', email:'', photoURL:'', password:'' })
-  const [err, setErr] = useState('')
+  const nav = useNavigate();
+  const { registerEmail } = useAuth();
+  const [form, setForm] = useState({ name:'', email:'', photoURL:'', password:'' });
+  const [err, setErr] = useState('');
 
-  const onChange = (k, v) => setForm(s => ({ ...s, [k]: v }))
+  const onChange = (k, v) => setForm(s => ({ ...s, [k]: v }));
   const onSubmit = async (e) => {
-    e.preventDefault()
-    if (!valid(form.password)) { setErr('Password must be 6+ chars & include uppercase + lowercase'); return }
+    e.preventDefault();
+    if (!valid(form.password)) { setErr('Password must be 6+ chars & include uppercase + lowercase'); return; }
     try {
-      await registerEmail(form)
-      await alertSuccess('Account created')
-      nav('/')
-    } catch (e) { alertError('Registration failed', e.message) }
-  }
+      await registerEmail(form);
+      await alertSuccess('Account created');
+      nav('/');
+    } catch (e) { alertError('Registration failed', e.message); }
+  };
 
   return (
     <div className="max-w-md mx-auto">
@@ -40,5 +39,5 @@ export default function Register(){
         <p className="text-sm">Have an account? <Link to="/login" className="underline">Login</Link></p>
       </form>
     </div>
-  )
+  );
 }

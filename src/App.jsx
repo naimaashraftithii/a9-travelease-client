@@ -1,27 +1,32 @@
 // src/App.jsx
 import { Routes, Route } from "react-router-dom";
-
+import { useIsFetching } from "@tanstack/react-query";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import Loader from "./components/Loader";
+import CarouselOne from "./components/CarouselOne"; // ⬅️ add
 
-// Pages (import each exactly once)
+// Pages
 import Home from "./pages/Home";
-import Vehicles from "./pages/Vehicles";            // if you have a listing page
-import VehicleDetails from "./pages/VehicleDetails"; // if you have a details page
+import Vehicles from "./pages/Vehicles";
+import VehicleDetails from "./pages/VehicleDetails";
 import AddVehicle from "./pages/AddVehicle";
 import MyVehicles from "./pages/MyVehicles";
 import MyBookings from "./pages/MyBookings";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import NotFound from "./pages/NoTFound";            // ← keep only THIS NotFound
-
-// Routes
+import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import Footer from "./components/Footer";
 
 export default function App() {
+  const isFetching = useIsFetching();
+
   return (
     <>
+      {isFetching > 0 && <Loader fullscreen text="Loading..." />}
       <Navbar />
+      <CarouselOne /> {/* ✅ shows under navbar on every page */}
+
       <div className="min-h-[calc(100vh-4rem)]">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -58,15 +63,13 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
-          {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
-     <Footer/>
+
+      <Footer />
     </>
   );
 }
