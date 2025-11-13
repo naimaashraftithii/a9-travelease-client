@@ -1,55 +1,96 @@
-// src/context/AuthContext.jsx
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from "react";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import app from "../firebase/firebase";
 
 const AuthContext = createContext(null);
 
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Optional: load user from localStorage (simple fake auth)
-  useEffect(() => {
-    const stored = localStorage.getItem("te_user");
-    if (stored) {
-      try {
-        setUser(JSON.parse(stored));
-      } catch {
-        localStorage.removeItem("te_user");
-      }
+  // login email
+  const loginEmail = (email, password) => {
+    setLoading(true);
+    return signInWithEmailAndPassword(auth, email, password).finally(() =>
+      setLoading(false)
+    );
+  };
+
+  // register email
+  const registerEmail = async ({ name, email, password, photoURL }) => {
+    setLoading(true);
+    try {
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      await updateProfile(user, {
+        displayName: name,
+        photoURL: photoURL || undefined,
+      });
+      return user;
+    } finally {
+      setLoading(false);
     }
+  };
+
+  // google login
+  const loginGoogle = () => {
+    setLoading(true);
+    return signInWithPopup(auth, googleProvider).finally(() =>
+      setLoading(false)
+    );
+  };
+
+  // logout
+  const logout = () => {
+    setLoading(true);
+    return signOut(auth).finally(() => setLoading(false));
+  };
+
+  // watch auth state + save token
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+
+      if (currentUser) {
+        const token = await currentUser.getIdToken();
+        localStorage.setItem("idToken", token);
+      } else {
+        localStorage.removeItem("idToken");
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
-
-  const login = async (email, _password) => {
-    // TODO: replace with real Firebase login
-    const fakeUser = { email };
-    setUser(fakeUser);
-    localStorage.setItem("te_user", JSON.stringify(fakeUser));
-    return fakeUser;
-  };
-
-  const loginWithGoogle = async () => {
-    // TODO: replace with real Google login
-    const fakeUser = { email: "google.user@example.com", provider: "google" };
-    setUser(fakeUser);
-    localStorage.setItem("te_user", JSON.stringify(fakeUser));
-    return fakeUser;
-  };
-
-  const logout = async () => {
-    setUser(null);
-    localStorage.removeItem("te_user");
-  };
 
   const value = {
     user,
     loading,
-    login,
-    loginWithGoogle,
+    loginEmail,
+    loginGoogle,
+    registerEmail,
     logout,
-    isAuthenticated: !!user,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

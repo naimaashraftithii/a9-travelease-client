@@ -1,4 +1,5 @@
-export const safeImg = (url) => {
-  if (!url) return "";
-  return url.replace("i.ibb.co.com", "i.ibb.co");
-};
+
+
+export function safeImg(url) {
+  return url || "https://via.placeholder.com/600x400?text=No+Image";
+}

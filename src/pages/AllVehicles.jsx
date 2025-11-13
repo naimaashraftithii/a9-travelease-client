@@ -3,33 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { fetchVehicles } from "../api/vehicles";
 import Loader from "../components/Loader";
-import { safeImg } from "../utils/images";
-
-function VehicleCard({ v }) {
-  return (
-    <div className="card bg-base-200 h-full">
-      <figure className="aspect-video overflow-hidden">
-        <img
-          src={safeImg(v.coverImage)}
-          alt={v.vehicleName}
-          className="w-full h-full object-cover"
-        />
-      </figure>
-      <div className="card-body">
-        <h3 className="card-title">{v.vehicleName}</h3>
-        <p className="text-sm opacity-80">
-          {v.location} • {v.category}
-        </p>
-        <div className="mt-auto flex items-center justify-between">
-          <span className="font-semibold">${v.pricePerDay}/day</span>
-          <a className="btn btn-sm btn-primary" href={`/vehicles/${v._id}`}>
-            View Details
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
+import VehicleCard from "../components/VehicleCard";
 
 export default function AllVehicles() {
   const [filters, setFilters] = useState({
@@ -46,7 +20,11 @@ export default function AllVehicles() {
     queryFn: () => fetchVehicles(filters),
   });
 
-  const onChange = (k, v) => setFilters((s) => ({ ...s, [k]: v }));
+  const onChange = (k, v) =>
+    setFilters((s) => ({
+      ...s,
+      [k]: v,
+    }));
 
   const setPriceSort = (order) =>
     setFilters((s) => ({
@@ -56,12 +34,18 @@ export default function AllVehicles() {
     }));
 
   if (isLoading) return <Loader />;
-  if (error)
-    return (
-      <div className="py-10 text-center">Failed to load vehicles.</div>
-    );
 
-  const list = data?.items || [];
+  if (error) {
+    console.error("AllVehicles error:", error);
+    return (
+      <div className="py-10 text-center text-red-500">
+        Failed to load vehicles.
+      </div>
+    );
+  }
+
+  // data can be { items: [...] } or a plain array; normalize:
+  const list = Array.isArray(data) ? data : data?.items || [];
 
   return (
     <div className="space-y-4">

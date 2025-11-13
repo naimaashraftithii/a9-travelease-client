@@ -1,4 +1,3 @@
-// src/pages/MyVehicles.jsx
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteVehicle, fetchVehicles } from "../api/vehicles";
 import { useAuth } from "../context/AuthContext";

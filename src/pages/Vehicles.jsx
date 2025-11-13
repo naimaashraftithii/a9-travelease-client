@@ -16,7 +16,7 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-// -------- VEHICLES --------
+//Vehicles
 export const fetchVehicles = async (params = {}) =>
   (await api.get("/vehicles", { params })).data;
 
@@ -33,7 +33,7 @@ export const updateVehicle = async (id, payload) =>
 export const deleteVehicle = async (id) =>
   (await api.delete(`/vehicles/${id}`)).data;
 
-// -------- BOOKINGS --------
+//Bookings
 export const bookVehicle = async (vehicleId, status) =>
   (await api.post("/bookings", { vehicleId, status })).data;
 

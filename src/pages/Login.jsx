@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
@@ -8,44 +7,41 @@ import { useAuth } from "../context/AuthContext";
 export default function Login() {
   const { loginEmail, loginGoogle } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
-  const [submitting, setSubmitting] = useState(false);
-
-  // after login, go back to the route user wanted, or home
-  const from = location.state?.from?.pathname || "/";
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Email + Password Login
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
+    setLoading(true);
     try {
       await loginEmail(form.email, form.password);
-      toast.success("Logged in successfully");
-      navigate(from, { replace: true });
-    } catch (err) {
-      const msg =
-        err?.message || "Login failed. Please check your email/password.";
-      toast.error(msg);
+      toast.success("Logged in successfully!");
+      // 💡 requirement: go to Home
+      navigate("/", { replace: true });
+    } catch {
+      toast.error("Invalid email or password");
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
   };
 
+  // Google Login
   const handleGoogleLogin = async () => {
-    setSubmitting(true);
+    setLoading(true);
     try {
       const result = await loginGoogle();
       const user = result.user;
 
-      // Optional: save user to your /users collection
-      await fetch(import.meta.env.VITE_API_BASE + "/users", {
+      // Optional: Save user to backend
+      fetch(`${import.meta.env.VITE_API_BASE}/users`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
@@ -55,20 +51,19 @@ export default function Login() {
         }),
       }).catch(() => {});
 
-      toast.success("Logged in with Google");
-      navigate(from, { replace: true });
-    } catch (err) {
-      const msg = err?.message || "Google login failed";
-      toast.error(msg);
+      toast.success(`Welcome ${user.displayName || "back"}!`);
+      // 💡 requirement: go to Home after Google login
+      navigate("/", { replace: true });
+    } catch {
+      toast.error("Google login failed. Try again.");
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-pink-50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-pink-500/5 pointer-events-none" />
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
         <h2 className="text-3xl font-bold text-center text-slate-900 mb-6">
           User{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-pink-500">
@@ -76,8 +71,8 @@ export default function Login() {
           </span>
         </h2>
 
+        {/* Email / Password Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email */}
           <div>
             <label className="block text-sm font-medium text-slate-600 mb-1">
               Email
@@ -88,12 +83,11 @@ export default function Login() {
               value={form.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
               placeholder="Enter your email"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
 
-          {/* Password */}
           <div>
             <label className="block text-sm font-medium text-slate-600 mb-1">
               Password
@@ -105,35 +99,24 @@ export default function Login() {
                 value={form.password}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-10"
                 placeholder="Enter your password"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 pr-10"
               />
               <span
+                onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-slate-500 hover:text-indigo-500"
-                onClick={() => setShowPassword((v) => !v)}
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
-
-            <div className="text-right mt-2">
-              <button
-                type="button"
-                className="text-sm text-indigo-600 hover:underline"
-                // TODO: wire forgot password with Firebase if you want
-              >
-                Forgot Password?
-              </button>
-            </div>
           </div>
 
-          {/* Login button */}
           <button
             type="submit"
-            disabled={submitting}
+            disabled={loading}
             className="w-full py-2 bg-gradient-to-r from-indigo-500 to-pink-500 text-white rounded-lg font-semibold hover:from-pink-500 hover:to-indigo-500 transition disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {submitting ? "Logging in..." : "Login"}
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
@@ -146,13 +129,12 @@ export default function Login() {
         {/* Google Login */}
         <button
           onClick={handleGoogleLogin}
-          disabled={submitting}
-          className="w-full flex items-center justify-center gap-2 border border-slate-300 rounded-lg py-2 hover:bg-slate-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+          disabled={loading}
+          className="w-full text-slate-700 flex items-center justify-center gap-2 border border-slate-300 rounded-lg py-2 hover:bg-slate-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          <FaGoogle className="text-red-500" /> Sign in with Google
+          <FaGoogle className="text-red-500" /> Continue with Google
         </button>
 
-        {/* Register Link */}
         <p className="text-center text-sm text-slate-600 mt-6">
           Don’t have an account?{" "}
           <Link

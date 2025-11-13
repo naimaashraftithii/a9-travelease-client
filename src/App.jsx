@@ -1,12 +1,9 @@
-// src/App.jsx
+
 import { Routes, Route } from "react-router-dom";
 import { useIsFetching } from "@tanstack/react-query";
-
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Loader from "./components/Loader";
-
-// Pages
 import Home from "./pages/Home";
 import AllVehicles from "./pages/AllVehicles";
 import VehicleDetails from "./pages/VehicleDetails";
@@ -71,8 +68,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
-          {/* 🔑 these two must exist for navbar buttons */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 

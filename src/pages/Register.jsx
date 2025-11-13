@@ -1,18 +1,12 @@
-// src/pages/Register.jsx
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
+import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
-import { alertSuccess, alertError } from "../lib/alert";
-
-const apiBase = import.meta.env.VITE_API_BASE || "http://localhost:3000";
 
 export default function Register() {
   const { registerEmail, loginGoogle } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = location.state?.from?.pathname || "/";
-
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -28,36 +22,30 @@ export default function Register() {
   };
 
   const validatePassword = (pwd) => {
-    if (pwd.length < 6) {
-      return "Password must be at least 6 characters.";
-    }
-    if (!/[A-Z]/.test(pwd)) {
-      return "Password must contain at least one uppercase letter.";
-    }
-    if (!/[a-z]/.test(pwd)) {
-      return "Password must contain at least one lowercase letter.";
-    }
+    if (pwd.length < 6) return "Password must be at least 6 characters.";
+    if (!/[A-Z]/.test(pwd)) return "Password must contain one uppercase letter.";
+    if (!/[a-z]/.test(pwd)) return "Password must contain one lowercase letter.";
     return "";
   };
 
   const saveUser = async (user) => {
     try {
       const newUser = {
-        name: user.displayName || form.name || "",
+        name: user.displayName || form.name,
         email: user.email,
-        image: user.photoURL || form.photoURL || "",
+        image: user.photoURL || form.photoURL,
       };
-
-      await fetch(`${apiBase}/users`, {
+      await fetch(`${import.meta.env.VITE_API_BASE}/users`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(newUser),
       });
-    } catch (e) {
-      console.warn("User save failed (non-blocking):", e);
+    } catch {
+      // ignore backend save error
     }
   };
 
+  // Register with Email
   const handleSubmit = async (e) => {
     e.preventDefault();
     const err = validatePassword(form.password);
@@ -67,7 +55,6 @@ export default function Register() {
     }
     setPassError("");
     setLoading(true);
-
     try {
       await registerEmail({
         name: form.name,
@@ -75,51 +62,46 @@ export default function Register() {
         password: form.password,
         photoURL: form.photoURL,
       });
-
-      // after Firebase registration, save to DB
       await saveUser({
         displayName: form.name,
         email: form.email,
         photoURL: form.photoURL,
       });
-
-      await alertSuccess("Registration successful!");
-      navigate(from, { replace: true });
-    } catch (e) {
-      const msg = e?.code || e?.message || "Registration failed";
-      await alertError("Registration failed", msg);
+      toast.success("Registration successful!");
+      navigate("/", { replace: true });
+    } catch {
+      toast.error("Registration failed. Try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  // Google Login
   const handleGoogle = async () => {
     setLoading(true);
     try {
       const result = await loginGoogle();
       await saveUser(result.user);
-      await alertSuccess("Logged in with Google!");
-      navigate(from, { replace: true });
-    } catch (e) {
-      const msg = e?.code || e?.message || "Google login failed";
-      await alertError("Google login failed", msg);
+      toast.success(`Welcome ${result.user.displayName || "!"}`);
+      navigate("/", { replace: true }); // go Home
+    } catch {
+      toast.error("Google login failed. Try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-gradient-to-br from-sky-50 to-emerald-50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-sky-500/5 to-emerald-500/5 pointer-events-none" />
-        <h2 className="text-3xl font-bold text-center text-slate-900 mb-6 relative z-10">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 to-emerald-50 px-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
+        <h2 className="text-3xl font-bold text-center text-slate-900 mb-6">
           User{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-emerald-500">
             Registration
           </span>
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-600 mb-1">
               Name
@@ -191,7 +173,7 @@ export default function Register() {
           </button>
         </form>
 
-        <div className="my-6 flex items-center justify-center gap-2 relative z-10">
+        <div className="my-6 flex items-center justify-center gap-2">
           <div className="h-px bg-slate-200 w-1/3"></div>
           <span className="text-sm text-slate-400">OR</span>
           <div className="h-px bg-slate-200 w-1/3"></div>
@@ -200,16 +182,16 @@ export default function Register() {
         <button
           onClick={handleGoogle}
           disabled={loading}
-          className="relative z-10 w-full flex items-center justify-center gap-2 border border-slate-300 rounded-lg py-2 hover:bg-slate-50 transition disabled:opacity-70"
+          className="w-full flex items-center justify-center gap-2 border border-slate-300 rounded-lg py-2 text-slate-700 hover:bg-slate-50 transition disabled:opacity-70"
         >
           <FaGoogle className="text-red-500" /> Continue with Google
         </button>
 
-        <p className="text-center text-sm text-slate-600 mt-6 relative z-10">
+        <p className="text-center text-sm text-slate-600 mt-6">
           Already have an account?{" "}
           <Link
             to="/login"
-            className="text-sky-600 font-semibold hover:underline"
+            className="text-indigo-600 font-semibold hover:underline"
           >
             Login
           </Link>

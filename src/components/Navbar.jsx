@@ -7,7 +7,7 @@ import logoImg from "../assets/logo2.png";
 
 const menuItems = [
   { to: "/", label: "Home" },
-  { to: "/allVehicles", label: "All Vehicles" },     // ✅ match router
+  { to: "/allVehicles", label: "All Vehicles" },    
   { to: "/addVehicle", label: "Add Vehicle", private: true },
   { to: "/myVehicles", label: "My Vehicles", private: true },
   { to: "/myBookings", label: "My Bookings", private: true },
@@ -109,7 +109,7 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* MIDDLE: desktop menu */}
+        {/*  desktop menu */}
         <nav className="col-span-2 lg:col-span-6 hidden lg:flex items-center justify-center gap-8">
           {menuItems.map((item) => {
             if (item.private && !user) return null;
@@ -129,7 +129,7 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* RIGHT: desktop controls */}
+        {/* Tdesktop controls*/}
         <div className="col-span-7 sm:col-span-8 lg:col-span-3 hidden md:flex items-center justify-end gap-3">
           {user ? (
             <>
@@ -195,7 +195,7 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile hamburger */}
+        {/* Mobile  */}
         <button
           onClick={() => setIsOpen((v) => !v)}
           className="md:hidden col-span-7 sm:col-span-8 justify-self-end p-2 rounded-md text-white bg-gradient-to-r from-orange-500 to-pink-500 shadow"
@@ -228,6 +228,15 @@ export default function Navbar() {
             );
           })}
           <div className="pt-2 flex gap-2">
+            // pseudo-example
+{user ? (
+  <button onClick={logout} className="btn btn-sm">Logout</button>
+) : (
+  <Link to="/login" className="btn btn-sm btn-primary">
+    Login
+  </Link>
+)}
+
             {user ? (
               <>
                 <button

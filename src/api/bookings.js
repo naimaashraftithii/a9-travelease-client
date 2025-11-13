@@ -1,7 +1,7 @@
-
+// src/api/bookings.js
 import http from "./http";
 
-//  Create booking
+// Create a booking
 export const createBooking = async (payload) => {
   const { data } = await http.post("/bookings", payload);
   return data;

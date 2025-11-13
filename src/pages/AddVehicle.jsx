@@ -1,4 +1,3 @@
-// src/pages/AddVehicle.jsx
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createVehicle } from "../api/vehicles";
@@ -28,6 +27,7 @@ export default function AddVehicle() {
       await alertSuccess("Vehicle added successfully!");
       qc.invalidateQueries({ queryKey: ["vehicles"] });
       qc.invalidateQueries({ queryKey: ["myVehicles", user?.email] });
+
       setForm((s) => ({
         ...s,
         vehicleName: "",
@@ -58,7 +58,8 @@ export default function AddVehicle() {
     try {
       await mutateAsync(payload);
     } catch (e) {
-      const msg = e?.response?.data?.message || e.message || "Request failed";
+      const msg =
+        e?.response?.data?.message || e.message || "Request failed";
       alertError("Failed to add vehicle", msg);
     }
   };
