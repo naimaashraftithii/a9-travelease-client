@@ -1,9 +1,17 @@
+// src/api/bookings.js
 import http from "./http";
 
-// create booking
+// Create a booking
 export const createBooking = async (payload) =>
   (await http.post("/bookings", payload)).data;
 
-// get bookings of current user
-export const fetchBookings = async (email) =>
-  (await http.get(`/bookings?email=${email}`)).data;
+// Get bookings for the logged-in user by email
+export const myBookings = async (email) => {
+  if (!email) return []; // safety
+
+  const { data } = await http.get("/bookings", {
+    params: { email }, // -> /bookings?email=...
+  });
+
+  return Array.isArray(data) ? data : data || [];
+};

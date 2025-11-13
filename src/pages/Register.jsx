@@ -1,43 +1,89 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from "../context/AuthContext.js";
-import { alertSuccess, alertError } from '../lib/alert';
+// src/components/Register/Register.jsx
+import React from "react";
+import { useAuth } from "../context/AuthContext";
 
-const valid = (p) => /[A-Z]/.test(p) && /[a-z]/.test(p) && p.length >= 6;
+const Register = () => {
+  const { loginGoogle } = useAuth();
 
-export default function Register(){
-  const nav = useNavigate();
-  const { registerEmail } = useAuth();
-  const [form, setForm] = useState({ name:'', email:'', photoURL:'', password:'' });
-  const [err, setErr] = useState('');
+  const handleGoogleSignIn = () => {
+    loginGoogle()
+      .then((result) => {
+        console.log(result.user);
+        const newUser = {
+          name: result.user.displayName,
+          email: result.user.email,
+          image: result.user.photoURL,
+        };
 
-  const onChange = (k, v) => setForm(s => ({ ...s, [k]: v }));
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    if (!valid(form.password)) { setErr('Password must be 6+ chars & include uppercase + lowercase'); return; }
-    try {
-      await registerEmail(form);
-      await alertSuccess('Account created');
-      nav('/');
-    } catch (e) { alertError('Registration failed', e.message); }
+        // create user in the database
+        fetch("http://localhost:3000/users", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(newUser),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("data after user save", data);
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
-    <div className="max-w-md mx-auto">
-      <h1 className="text-3xl font-bold mb-4">Register</h1>
-      <form onSubmit={onSubmit} className="space-y-3">
-        <input className="input input-bordered w-full" placeholder="Name"
-               value={form.name} onChange={e=>onChange('name', e.target.value)} />
-        <input className="input input-bordered w-full" placeholder="Email" type="email"
-               value={form.email} onChange={e=>onChange('email', e.target.value)} />
-        <input className="input input-bordered w-full" placeholder="Photo URL"
-               value={form.photoURL} onChange={e=>onChange('photoURL', e.target.value)} />
-        <input className="input input-bordered w-full" placeholder="Password" type="password"
-               value={form.password} onChange={e=>onChange('password', e.target.value)} />
-        {err && <p className="text-error text-sm">{err}</p>}
-        <button className="btn btn-primary w-full">Register</button>
-        <p className="text-sm">Have an account? <Link to="/login" className="underline">Login</Link></p>
-      </form>
+    <div className="card bg-base-100 mx-auto w-full max-w-sm shrink-0 shadow-2xl">
+      <h1 className="text-3xl font-bold text-center mt-4">Register / Login</h1>
+      <div className="card-body">
+        <fieldset className="fieldset">
+          <label className="label">Email</label>
+          <input type="email" className="input" placeholder="Email" />
+          <label className="label">Password</label>
+          <input type="password" className="input" placeholder="Password" />
+          <div>
+            <a className="link link-hover">Forgot password?</a>
+          </div>
+          <button className="btn btn-neutral mt-4">Register</button>
+        </fieldset>
+
+        <button
+          onClick={handleGoogleSignIn}
+          className="btn bg-white text-black border-[#e5e5e5]"
+        >
+          <svg
+            aria-label="Google logo"
+            width="16"
+            height="16"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 512 512"
+          >
+            <g>
+              <path d="m0 0H512V512H0" fill="#fff"></path>
+              <path
+                fill="#34a853"
+                d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341"
+              ></path>
+              <path
+                fill="#4285f4"
+                d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57"
+              ></path>
+              <path
+                fill="#fbbc02"
+                d="m90 341a208 200 0 010-171l63 49q-12 37 0 73"
+              ></path>
+              <path
+                fill="#ea4335"
+                d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55"
+              ></path>
+            </g>
+          </svg>
+          Login with Google
+        </button>
+      </div>
     </div>
   );
-}
+};
+
+export default Register;

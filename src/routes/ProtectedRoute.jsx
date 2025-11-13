@@ -1,23 +1,23 @@
+// src/Routes/PrivateRoute.jsx
 import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 import Loader from "../components/Loader";
-import { useAuth } from "../context/AuthContext.js";
-export default function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth();
-  const loc = useLocation();
 
-  if (loading) {
+export default function PrivateRoute({ children }) {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) return <Loader fullscreen text="Checking authentication…" />;
+
+  if (!user) {
     return (
-      <div className="min-h-[60vh] grid place-items-center">
-        <div className="flex flex-col items-center gap-3">
-          <Loader />
-          <p className="text-sm opacity-80">Checking your session…</p>
-        </div>
-      </div>
+      <Navigate
+        to="/register"
+        state={{ from: location.pathname }}
+        replace
+      />
     );
   }
 
-  if (!user) {
-    return <Navigate to="/login" state={{ from: loc, reason: "auth_required" }} replace />;
-  }
   return children;
 }

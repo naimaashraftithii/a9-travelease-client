@@ -1,16 +1,16 @@
+// src/components/Navbar.jsx
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-
-import { useAuth } from "../context/AuthContext.js";
+import { useAuth } from "../context/AuthContext";
 import { confirm, alertSuccess } from "../lib/alert";
 import logoImg from "../assets/logo2.png";
 
 const menuItems = [
   { to: "/", label: "Home" },
-  { to: "/vehicles", label: "All Vehicles" },
-  { to: "/add-vehicle", label: "Add Vehicle", private: true },
-  { to: "/my-vehicles", label: "My Vehicles", private: true },
-  { to: "/my-bookings", label: "My Bookings", private: true },
+  { to: "/allVehicles", label: "All Vehicles" },     // ✅ match router
+  { to: "/addVehicle", label: "Add Vehicle", private: true },
+  { to: "/myVehicles", label: "My Vehicles", private: true },
+  { to: "/myBookings", label: "My Bookings", private: true },
 ];
 
 const btn = (cls = "") =>
@@ -23,9 +23,18 @@ export default function Navbar() {
   const [imgOk, setImgOk] = useState(true);
   const navigate = useNavigate();
 
+  // 🌓 Apply theme to <html> and DaisyUI
   useEffect(() => {
     const html = document.documentElement;
-    theme === "dark" ? html.classList.add("dark") : html.classList.remove("dark");
+
+    if (theme === "dark") {
+      html.classList.add("dark");
+      html.setAttribute("data-theme", "dark");
+    } else {
+      html.classList.remove("dark");
+      html.setAttribute("data-theme", "light");
+    }
+
     localStorage.setItem("theme", theme);
   }, [theme]);
 
@@ -37,76 +46,70 @@ export default function Navbar() {
     navigate("/");
   };
 
+  const toggleTheme = () =>
+    setTheme((t) => (t === "light" ? "dark" : "light"));
+
   return (
     <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/95 backdrop-blur">
       <div className="max-w-7xl mx-auto px-4 h-16 grid grid-cols-12 items-center gap-4">
+        {/* LEFT: logo */}
+        <div className="col-span-5 sm:col-span-4 lg:col-span-3">
+          <Link to="/" className="flex items-center gap-2 relative group">
+            {imgOk ? (
+              <img
+                src={logoImg}
+                alt="Logo"
+                className="w-8 h-8 object-contain"
+                onError={() => setImgOk(false)}
+              />
+            ) : (
+              <div className="w-8 h-8 rounded bg-orange-500 grid place-items-center text-white font-bold">
+                T
+              </div>
+            )}
 
-        
-        {/* LEFT: logo + wordmark */}
-     <div className="col-span-5 sm:col-span-4 lg:col-span-3">
-  <Link to="/" className="flex items-center gap-2 relative group">
-    {/* logo image */}
-    {imgOk ? (
-      <img
-        src={logoImg}
-        alt="Logo"
-        className="w-8 h-8 object-contain"
-        onError={() => setImgOk(false)}
-      />
-    ) : (
-      <div className="w-8 h-8 rounded bg-orange-500 grid place-items-center text-white font-bold">
-        T
-      </div>
-    )}
+            <div className="relative leading-none select-none">
+              <span
+                className="text-lg md:text-xl italic font-black text-slate-100"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                Travel
+              </span>
+              <span
+                className="ml-1 text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 via-amber-400 to-rose-400"
+                style={{ fontFamily: "'Pacifico', cursive" }}
+              >
+                Easy
+              </span>
 
-    {/* ✅ Logo Text with artistic underline */}
-    <div className="relative leading-none select-none">
-      {/* Text */}
-      <span
-        className="text-lg md:text-xl italic font-black text-slate-100"
-        style={{ fontFamily: "'Playfair Display', serif" }}
-      >
-        Travel
-      </span>
-      <span
-        className="ml-1 text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 via-amber-400 to-rose-400"
-        style={{ fontFamily: "'Pacifico', cursive" }}
-      >
-        Easy
-      </span>
+              <svg
+                viewBox="0 0 200 20"
+                className="absolute left-0 bottom-[-6px] w-full h-[14px] pointer-events-none"
+              >
+                <path
+                  d="M5 15 Q 80 2, 195 10"
+                  fill="none"
+                  stroke="url(#grad)"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  style={{
+                    filter:
+                      "drop-shadow(0 0 4px rgba(255,140,0,0.6)) drop-shadow(0 0 10px rgba(255,80,0,0.3))",
+                  }}
+                />
+                <defs>
+                  <linearGradient id="grad" x1="0" x2="1" y1="0" y2="0">
+                    <stop offset="0%" stopColor="#fb923c" />
+                    <stop offset="50%" stopColor="#f97316" />
+                    <stop offset="100%" stopColor="#dc2626" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+          </Link>
+        </div>
 
-      {/* 🔥 Curved Paint Stroke Underline */}
-      <svg
-        viewBox="0 0 200 20"
-        className="absolute left-0 bottom-[-6px] w-full h-[14px] pointer-events-none"
-      >
-        <path
-          d="M5 15 Q 80 2, 195 10"
-          fill="none"
-          stroke="url(#grad)"
-          strokeWidth="6"
-          strokeLinecap="round"
-          style={{
-            filter:
-              "drop-shadow(0 0 4px rgba(255,140,0,0.6)) drop-shadow(0 0 10px rgba(255,80,0,0.3))",
-          }}
-        />
-        <defs>
-          <linearGradient id="grad" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="#fb923c" />
-            <stop offset="50%" stopColor="#f97316" />
-            <stop offset="100%" stopColor="#dc2626" />
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
-  </Link>
-</div>
-
-
-
-
-        {/* MIDDLE: menu (desktop) */}
+        {/* MIDDLE: desktop menu */}
         <nav className="col-span-2 lg:col-span-6 hidden lg:flex items-center justify-center gap-8">
           {menuItems.map((item) => {
             if (item.private && !user) return null;
@@ -126,7 +129,7 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* RIGHT: avatar + logout + theme (desktop) */}
+        {/* RIGHT: desktop controls */}
         <div className="col-span-7 sm:col-span-8 lg:col-span-3 hidden md:flex items-center justify-end gap-3">
           {user ? (
             <>
@@ -150,7 +153,7 @@ export default function Navbar() {
                 LogOut
               </button>
               <button
-                onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
+                onClick={toggleTheme}
                 className={btn(
                   theme === "dark"
                     ? "text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-blue-500 hover:to-cyan-500"
@@ -179,7 +182,7 @@ export default function Navbar() {
                 Register
               </Link>
               <button
-                onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
+                onClick={toggleTheme}
                 className={btn(
                   theme === "dark"
                     ? "text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-blue-500 hover:to-cyan-500"
@@ -192,7 +195,7 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile hamburger (shows middle + right in a panel) */}
+        {/* Mobile hamburger */}
         <button
           onClick={() => setIsOpen((v) => !v)}
           className="md:hidden col-span-7 sm:col-span-8 justify-self-end p-2 rounded-md text-white bg-gradient-to-r from-orange-500 to-pink-500 shadow"
@@ -240,13 +243,14 @@ export default function Navbar() {
                 </button>
                 <button
                   onClick={() => {
-                    setTheme((t) => (t === "light" ? "dark" : "light"));
+                    toggleTheme();
                     setIsOpen(false);
                   }}
                   className={btn(
                     (theme === "dark"
                       ? "text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-blue-500 hover:to-cyan-500 "
-                      : "text-slate-900 bg-gradient-to-r from-sky-300 to-indigo-300 hover:from-indigo-300 hover:to-sky-300 ") + "flex-1"
+                      : "text-slate-900 bg-gradient-to-r from-sky-300 to-indigo-300 hover:from-indigo-300 hover:to-sky-300 ") +
+                      "flex-1"
                   )}
                 >
                   {theme === "dark" ? "Dark → Light" : "Light → Dark"}

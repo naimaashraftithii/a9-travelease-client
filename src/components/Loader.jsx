@@ -1,3 +1,4 @@
+// src/components/Loader.jsx
 import styled, { keyframes } from "styled-components";
 
 export default function Loader({ fullscreen = false, text = "Loading…" }) {
@@ -18,11 +19,12 @@ export default function Loader({ fullscreen = false, text = "Loading…" }) {
       </main>
       <p className="sr-only">{text}</p>
       {!fullscreen && <div className="hint">{text}</div>}
-       <div className="flex justify-center items-center min-h-[50vh]">
-      <span className="loading loading-spinner loading-lg text-blue-500"></span>
-    </div>
+
+      {/* Extra daisyUI spinner (optional) */}
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <span className="loading loading-spinner loading-lg text-blue-500"></span>
+      </div>
     </Wrap>
-    
   );
 }
 
@@ -41,10 +43,6 @@ const chomp2 = keyframes`
   0% { transform: rotate(0deg); }
   50% { transform: rotate(-45deg); }
   100% { transform: rotate(0deg); }
-`;
-const loaderLine = keyframes`
-  0%, 48% { border-top: 10px dotted #1E88E5; }
-  50%, 100% { border-top: 10px dotted #F44336; }
 `;
 const dot1 = keyframes`
   0%,4% { background: #1E88E5; opacity: 1; }

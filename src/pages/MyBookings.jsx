@@ -1,32 +1,135 @@
+// src/pages/MyBookings.jsx
 import { useQuery } from "@tanstack/react-query";
-import { fetchBookings } from "../api/bookings";
-import { useAuth } from "../context/AuthContext.js";
+import { myBookings } from "../api/bookings";
+import { safeImg } from "../utils/images";
 import Loader from "../components/Loader";
+import { useAuth } from "../context/AuthContext";
+import { motion } from "framer-motion";
+import { format } from "date-fns";
 
 export default function MyBookings() {
   const { user } = useAuth();
-  const { data, isLoading } = useQuery({
-    queryKey: ["bookings", user?.email],
-    queryFn: () => fetchBookings(user.email),
-    enabled: !!user,
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["myBookings", user?.email],
+    enabled: !!user?.email, // wait for user.email
+    queryFn: () => myBookings(user.email),
   });
 
-  if (isLoading) return <Loader />;
+  if (!user?.email) {
+    return (
+      <div className="py-10 text-center">
+        Please login to see your bookings.
+      </div>
+    );
+  }
+
+  if (isLoading)
+    return <Loader fullscreen={false} text="Loading your bookings..." />;
+
+  if (error) {
+    console.error("Bookings error:", error);
+    const msg =
+      error.response?.data?.message || error.message || "Unknown error";
+    return (
+      <div className="text-center py-10">
+        Error loading bookings
+        <p className="text-sm text-red-400 mt-1">{msg}</p>
+      </div>
+    );
+  }
+
+  const list = Array.isArray(data) ? data : [];
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">My Bookings</h1>
-      <table className="table">
-        <thead><tr><th>Vehicle</th><th>Status</th></tr></thead>
-        <tbody>
-          {(data || []).map((b) => (
-            <tr key={b._id}>
-              <td>{b.vehicleName}</td>
-              <td>{b.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="space-y-4">
+      {/* Heading consistent with other sections */}
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h1 className="text-2xl md:text-3xl font-bold">
+          My <span className="text-primary">Bookings</span>
+        </h1>
+        <p className="text-sm opacity-70">
+          Total bookings:{" "}
+          <span className="font-semibold">{list.length}</span>
+        </p>
+      </div>
+
+      {list.length === 0 && (
+        <p className="text-sm opacity-70">
+          No bookings found yet. Go to{" "}
+          <span className="font-semibold">All Vehicles</span> and request a
+          ride.
+        </p>
+      )}
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {list.map((b, idx) => {
+          const v = b.vehicle || {};
+          const created =
+            b.createdAt || b.date || b.created_at || null; // tolerate different names
+
+          let prettyDate = "";
+          try {
+            if (created) prettyDate = format(new Date(created), "dd MMM yyyy");
+          } catch {
+            prettyDate = "";
+          }
+
+          return (
+            <motion.div
+              key={b._id}
+              className="card bg-base-200 h-full flex flex-col"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.04, duration: 0.3 }}
+            >
+              <figure className="aspect-video">
+                <img
+                  src={safeImg(v.coverImage)}
+                  alt={v.vehicleName || "Vehicle"}
+                  className="w-full h-full object-cover"
+                />
+              </figure>
+              <div className="card-body flex flex-col">
+                <div>
+                  <h3 className="card-title">{v.vehicleName || "Unknown car"}</h3>
+                  <p className="text-sm opacity-80">{v.category}</p>
+                  <p className="text-sm opacity-70">
+                    Location: {v.location || "N/A"}
+                  </p>
+
+                  <p className="text-sm font-semibold mt-1">
+                    Price:{" "}
+                    {typeof v.pricePerDay === "number"
+                      ? `$${v.pricePerDay}/day`
+                      : "N/A"}
+                  </p>
+
+                  <p className="text-xs opacity-70 mt-1">
+                    Status:{" "}
+                    <span
+                      className={
+                        b.status === "booked" || b.status === "confirmed"
+                          ? "text-green-400 font-semibold"
+                          : "text-yellow-400 font-semibold"
+                      }
+                    >
+                      {b.status || "requested"}
+                    </span>
+                    {prettyDate && ` · ${prettyDate}`}
+                  </p>
+                </div>
+
+                {/* Optional status badge area or future actions */}
+                <div className="mt-3 flex items-center justify-between text-xs opacity-70">
+                  <span>Booking ID: {b._id.slice(-6)}</span>
+                  {b.bookingType && <span>{b.bookingType}</span>}
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
     </div>
   );
 }
