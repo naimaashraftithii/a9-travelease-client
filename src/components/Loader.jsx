@@ -18,7 +18,11 @@ export default function Loader({ fullscreen = false, text = "Loading…" }) {
       </main>
       <p className="sr-only">{text}</p>
       {!fullscreen && <div className="hint">{text}</div>}
+       <div className="flex justify-center items-center min-h-[50vh]">
+      <span className="loading loading-spinner loading-lg text-blue-500"></span>
+    </div>
     </Wrap>
+    
   );
 }
 

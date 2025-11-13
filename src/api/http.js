@@ -1,14 +1,13 @@
 import axios from "axios";
 
 const http = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE || "http://localhost:3000",
+  baseURL: "http://localhost:3000",
+  withCredentials: true,
 });
 
-// attach token if you store one (optional)
-http.interceptors.request.use((config) => {
-  const token = localStorage.getItem("idToken");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+http.interceptors.response.use(
+  (res) => res,
+  (err) => Promise.reject(err.response?.data || err)
+);
 
 export default http;
