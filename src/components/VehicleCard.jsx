@@ -1,4 +1,4 @@
-// src/components/VehicleCard.jsx
+
 import { Link } from "react-router-dom";
 import { safeImg } from "../utils/safeImg";
 

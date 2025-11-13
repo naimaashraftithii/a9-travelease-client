@@ -22,7 +22,7 @@ export default function VehicleDetails() {
     mutationFn: (payload) => createBooking(payload),
     onSuccess: async () => {
       await alertSuccess("Ride requested successfully!");
-      // refetch bookings after a successful booking
+      
       qc.invalidateQueries({ queryKey: ["myBookings"] });
     },
     onError: (e) => {

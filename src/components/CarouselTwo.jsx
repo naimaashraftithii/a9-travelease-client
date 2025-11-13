@@ -1,9 +1,9 @@
-// src/components/CarouselTwo.jsx
+
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
-// 15 cars → 3 slides → 5 cards per slide
+// 15 cars
 const CARS = [
   {
     name: "Urban Explorer",
@@ -99,14 +99,14 @@ const CARS = [
   },
 ];
 
-// 5 cards per slide → 15 / 5 = 3 slides
+// 5 cards
 const SLIDE_SIZE = 5;
 const SLIDES = CARS.reduce((acc, _, i, arr) => {
   if (i % SLIDE_SIZE === 0) acc.push(arr.slice(i, i + SLIDE_SIZE));
   return acc;
 }, []);
 
-/** Big car icon (top of cards) */
+/** Big car icon  */
 function CarHeroIcon({ className = "" }) {
   return (
     <svg
@@ -124,7 +124,7 @@ function CarHeroIcon({ className = "" }) {
   );
 }
 
-/** Tiny car icon for the "5/7 cars" rating bar */
+
 function CarMiniIcon({ active }) {
   return (
     <svg
@@ -212,7 +212,7 @@ export default function CarouselTwo() {
                         </h3>
                         <p className="text-xs text-slate-400">{car.type}</p>
 
-                        {/* 5/7 cars style popularity */}
+                        {/* 5/7 */}
                         <div className="mt-3 flex items-center justify-center gap-1">
                           {Array.from({ length: 7 }).map((_, idx2) => (
                             <CarMiniIcon
@@ -268,7 +268,7 @@ export default function CarouselTwo() {
           </div>
         </div>
 
-        {/* CTA — go to All Vehicles page */}
+        {/* CTA */}
         <div className="mt-10 flex justify-center">
           <Link
             to="/allVehicles"

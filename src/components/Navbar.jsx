@@ -1,4 +1,4 @@
-// src/components/Navbar.jsx
+
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -23,7 +23,7 @@ export default function Navbar() {
   const [imgOk, setImgOk] = useState(true);
   const navigate = useNavigate();
 
-  // 🌓 Apply theme to <html> and DaisyUI
+ 
   useEffect(() => {
     const html = document.documentElement;
 

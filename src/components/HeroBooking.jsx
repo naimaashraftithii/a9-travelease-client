@@ -1,6 +1,6 @@
 // src/components/HeroBooking.jsx
 import { useState, useRef } from "react";
-import { motion } from "framer-motion";                 // ✅ ADD THIS
+import { motion } from "framer-motion";               
 import { useSpring, animated, to as springTo } from "@react-spring/web";
 import Swal from "sweetalert2";
 import {

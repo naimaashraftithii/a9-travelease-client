@@ -1,4 +1,4 @@
-// src/components/Loader.jsx
+
 import styled, { keyframes } from "styled-components";
 
 export default function Loader({ fullscreen = false, text = "Loading…" }) {

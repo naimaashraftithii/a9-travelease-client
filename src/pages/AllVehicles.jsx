@@ -1,4 +1,4 @@
-// src/pages/AllVehicles.jsx
+
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { fetchVehicles } from "../api/vehicles";
@@ -44,7 +44,7 @@ export default function AllVehicles() {
     );
   }
 
-  // data can be { items: [...] } or a plain array; normalize:
+  // data 
   const list = Array.isArray(data) ? data : data?.items || [];
 
   return (

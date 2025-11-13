@@ -1,4 +1,4 @@
-// src/components/ErrorState.jsx
+
 import errImg from "../assets/error-404.png";
 import { Link } from "react-router-dom";
 
