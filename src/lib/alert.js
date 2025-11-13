@@ -1,8 +1,7 @@
-// src/utils/swal.js
+
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
-// 🌈 Reusable SweetAlert2 setup with Tailwind + gradient styles
 export const swal = Swal.mixin({
   buttonsStyling: false,
   customClass: {
@@ -19,7 +18,7 @@ export const swal = Swal.mixin({
   },
 });
 
-// ✅ Success Alert
+
 export const alertSuccess = (title = "✅ Success!", text = "") =>
   swal.fire({
     icon: "success",
@@ -31,8 +30,8 @@ export const alertSuccess = (title = "✅ Success!", text = "") =>
     confirmButtonText: "Great!",
   });
 
-// ❌ Error Alert
-export const alertError = (title = "❌ Oops!", text = "") =>
+
+export const alertError = (title = "❌ Oops!!!", text = "") =>
   swal.fire({
     icon: "error",
     title,
@@ -43,7 +42,7 @@ export const alertError = (title = "❌ Oops!", text = "") =>
     confirmButtonText: "Try Again",
   });
 
-// ⚠️ Confirm Alert
+
 export const confirm = (
   title = "⚠️ Are you sure?",
   text = "This action cannot be undone."

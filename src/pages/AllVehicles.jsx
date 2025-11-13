@@ -48,15 +48,44 @@ export default function AllVehicles() {
 
   const onChange = (k, v) => setFilters((s) => ({ ...s, [k]: v }));
 
+  const setPriceSort = (order) =>
+    setFilters((s) => ({
+      ...s,
+      sortBy: "pricePerDay",
+      sortOrder: order,
+    }));
+
   if (isLoading) return <Loader />;
-  if (error) return <div className="py-10 text-center">Failed to load vehicles.</div>;
+  if (error)
+    return (
+      <div className="py-10 text-center">Failed to load vehicles.</div>
+    );
 
   const list = data?.items || [];
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">All Vehicles</h1>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <h1 className="text-2xl font-bold">All Vehicles</h1>
 
+        {/* Price sort buttons */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setPriceSort("asc")}
+            className="px-3 py-1 rounded-full text-xs font-semibold text-white bg-gradient-to-r from-emerald-500 to-sky-500 hover:from-sky-500 hover:to-emerald-500"
+          >
+            Price ↑ (Low to High)
+          </button>
+          <button
+            onClick={() => setPriceSort("desc")}
+            className="px-3 py-1 rounded-full text-xs font-semibold text-white bg-gradient-to-r from-rose-500 to-orange-500 hover:from-orange-500 hover:to-rose-500"
+          >
+            Price ↓ (High to Low)
+          </button>
+        </div>
+      </div>
+
+      {/* Filters */}
       <div className="grid md:grid-cols-6 gap-3">
         <select
           className="select select-bordered"
@@ -110,6 +139,7 @@ export default function AllVehicles() {
         </select>
       </div>
 
+      {/* Grid */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {list.map((v) => (
           <VehicleCard key={v._id} v={v} />

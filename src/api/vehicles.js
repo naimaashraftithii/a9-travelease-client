@@ -1,14 +1,14 @@
-// src/api/vehicles.js
+
 import http from "./http";
 
-// Get vehicles list (with filters & sorting)
+// Get vehicles 
 export const fetchVehicles = async (params = {}) => {
   const { data } = await http.get("/vehicles", { params });
   if (Array.isArray(data)) return { items: data, total: data.length };
   return data;
 };
 
-// Get single vehicle
+// Get vehicle
 export const fetchVehicle = async (id) =>
   (await http.get(`/vehicles/${id}`)).data;
 
@@ -24,11 +24,10 @@ export const updateVehicle = async (id, payload) =>
 export const deleteVehicle = async (id) =>
   (await http.delete(`/vehicles/${id}`)).data;
 
-// Book vehicle directly via this helper (optional)
+// Book vehicle 
 export const bookVehicle = async (vehicleId, status = "requested") =>
   (await http.post("/bookings", { vehicleId, status })).data;
 
-// Summary endpoint (optional/fallback)
 export const fetchVehicleSummary = async (id) => {
   try {
     return (await http.get(`/vehicles/${id}/summary`)).data;
@@ -37,7 +36,7 @@ export const fetchVehicleSummary = async (id) => {
   }
 };
 
-// Top vehicles for Home page
+
 export const fetchTopVehicles = async (limit = 3) => {
   try {
     const { data } = await http.get("/stats/top-vehicles", {
@@ -51,4 +50,10 @@ export const fetchTopVehicles = async (limit = 3) => {
     if (Array.isArray(data)) return data;
     return data.items || [];
   }
+};
+
+export const fetchLatestVehicles = async () => {
+  const { data } = await http.get("/latest-vehicles");
+  if (Array.isArray(data)) return data;
+  return data.items || [];
 };

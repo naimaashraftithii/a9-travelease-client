@@ -1,89 +1,220 @@
-// src/components/Register/Register.jsx
-import React from "react";
+// src/pages/Register.jsx
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaGoogle } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import { alertSuccess, alertError } from "../lib/alert";
 
-const Register = () => {
-  const { loginGoogle } = useAuth();
+const apiBase = import.meta.env.VITE_API_BASE || "http://localhost:3000";
 
-  const handleGoogleSignIn = () => {
-    loginGoogle()
-      .then((result) => {
-        console.log(result.user);
-        const newUser = {
-          name: result.user.displayName,
-          email: result.user.email,
-          image: result.user.photoURL,
-        };
+export default function Register() {
+  const { registerEmail, loginGoogle } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
-        // create user in the database
-        fetch("http://localhost:3000/users", {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify(newUser),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            console.log("data after user save", data);
-          });
-      })
-      .catch((error) => {
-        console.log(error);
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    photoURL: "",
+    password: "",
+  });
+  const [passError, setPassError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validatePassword = (pwd) => {
+    if (pwd.length < 6) {
+      return "Password must be at least 6 characters.";
+    }
+    if (!/[A-Z]/.test(pwd)) {
+      return "Password must contain at least one uppercase letter.";
+    }
+    if (!/[a-z]/.test(pwd)) {
+      return "Password must contain at least one lowercase letter.";
+    }
+    return "";
+  };
+
+  const saveUser = async (user) => {
+    try {
+      const newUser = {
+        name: user.displayName || form.name || "",
+        email: user.email,
+        image: user.photoURL || form.photoURL || "",
+      };
+
+      await fetch(`${apiBase}/users`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(newUser),
       });
+    } catch (e) {
+      console.warn("User save failed (non-blocking):", e);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const err = validatePassword(form.password);
+    if (err) {
+      setPassError(err);
+      return;
+    }
+    setPassError("");
+    setLoading(true);
+
+    try {
+      await registerEmail({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        photoURL: form.photoURL,
+      });
+
+      // after Firebase registration, save to DB
+      await saveUser({
+        displayName: form.name,
+        email: form.email,
+        photoURL: form.photoURL,
+      });
+
+      await alertSuccess("Registration successful!");
+      navigate(from, { replace: true });
+    } catch (e) {
+      const msg = e?.code || e?.message || "Registration failed";
+      await alertError("Registration failed", msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogle = async () => {
+    setLoading(true);
+    try {
+      const result = await loginGoogle();
+      await saveUser(result.user);
+      await alertSuccess("Logged in with Google!");
+      navigate(from, { replace: true });
+    } catch (e) {
+      const msg = e?.code || e?.message || "Google login failed";
+      await alertError("Google login failed", msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="card bg-base-100 mx-auto w-full max-w-sm shrink-0 shadow-2xl">
-      <h1 className="text-3xl font-bold text-center mt-4">Register / Login</h1>
-      <div className="card-body">
-        <fieldset className="fieldset">
-          <label className="label">Email</label>
-          <input type="email" className="input" placeholder="Email" />
-          <label className="label">Password</label>
-          <input type="password" className="input" placeholder="Password" />
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-gradient-to-br from-sky-50 to-emerald-50 px-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-sky-500/5 to-emerald-500/5 pointer-events-none" />
+        <h2 className="text-3xl font-bold text-center text-slate-900 mb-6 relative z-10">
+          User{" "}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-emerald-500">
+            Registration
+          </span>
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
           <div>
-            <a className="link link-hover">Forgot password?</a>
+            <label className="block text-sm font-medium text-slate-600 mb-1">
+              Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
+              placeholder="Your full name"
+            />
           </div>
-          <button className="btn btn-neutral mt-4">Register</button>
-        </fieldset>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-600 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
+              placeholder="Your email"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-600 mb-1">
+              Photo URL
+            </label>
+            <input
+              type="url"
+              name="photoURL"
+              value={form.photoURL}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
+              placeholder="https://example.com/me.jpg"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-600 mb-1">
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
+              placeholder="Create a strong password"
+            />
+            {passError && (
+              <p className="text-xs text-red-500 mt-1">{passError}</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-2 bg-gradient-to-r from-sky-500 to-emerald-500 text-white rounded-lg font-semibold hover:from-emerald-500 hover:to-sky-500 transition disabled:opacity-70"
+          >
+            {loading ? "Creating account..." : "Register"}
+          </button>
+        </form>
+
+        <div className="my-6 flex items-center justify-center gap-2 relative z-10">
+          <div className="h-px bg-slate-200 w-1/3"></div>
+          <span className="text-sm text-slate-400">OR</span>
+          <div className="h-px bg-slate-200 w-1/3"></div>
+        </div>
 
         <button
-          onClick={handleGoogleSignIn}
-          className="btn bg-white text-black border-[#e5e5e5]"
+          onClick={handleGoogle}
+          disabled={loading}
+          className="relative z-10 w-full flex items-center justify-center gap-2 border border-slate-300 rounded-lg py-2 hover:bg-slate-50 transition disabled:opacity-70"
         >
-          <svg
-            aria-label="Google logo"
-            width="16"
-            height="16"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 512 512"
-          >
-            <g>
-              <path d="m0 0H512V512H0" fill="#fff"></path>
-              <path
-                fill="#34a853"
-                d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341"
-              ></path>
-              <path
-                fill="#4285f4"
-                d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57"
-              ></path>
-              <path
-                fill="#fbbc02"
-                d="m90 341a208 200 0 010-171l63 49q-12 37 0 73"
-              ></path>
-              <path
-                fill="#ea4335"
-                d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55"
-              ></path>
-            </g>
-          </svg>
-          Login with Google
+          <FaGoogle className="text-red-500" /> Continue with Google
         </button>
+
+        <p className="text-center text-sm text-slate-600 mt-6 relative z-10">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="text-sky-600 font-semibold hover:underline"
+          >
+            Login
+          </Link>
+        </p>
       </div>
     </div>
   );
-};
-
-export default Register;
+}

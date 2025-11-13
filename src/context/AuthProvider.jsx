@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { AuthContext } from "./AuthContext.jsx";
-import { auth } from "../firebase/firebase.js"; // or firebase.init, whichever you use
+import { auth } from "../firebase/firebase.js"; 
 import {
   onAuthStateChanged,
   onIdTokenChanged,

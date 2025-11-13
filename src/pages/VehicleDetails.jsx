@@ -1,12 +1,14 @@
-// src/pages/VehicleDetails.jsx
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchVehicle } from "../api/vehicles";
-import { createBooking } from "../api/bookings";
+import { createBooking } from "../api/bookings";  // ✅ must match the export
 import Loader from "../components/Loader";
 import { safeImg } from "../utils/images";
 import { alertSuccess, alertError } from "../lib/alert";
 import { useAuth } from "../context/AuthContext";
+
+
+
 
 export default function VehicleDetails() {
   const { id } = useParams();

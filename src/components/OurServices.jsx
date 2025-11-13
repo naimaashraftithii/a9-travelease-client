@@ -68,7 +68,7 @@ export default function OurServices() {
                 </h3>
                 <p className="text-gray-600 text-sm mt-1">{item.desc}</p>
               </div>
-              <button className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md font-medium text-sm transition">
+              <button className="bg-orange-400 hover:bg-orange-600 text-white px-4 py-2 rounded-full font-light text-xs transition">
                 Read More
               </button>
             </div>

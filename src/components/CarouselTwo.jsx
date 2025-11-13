@@ -1,104 +1,232 @@
 // src/components/CarouselTwo.jsx
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
-// === Car data with individual images ===
-const CAR_TYPES = [
-  { name: "Family MPV", count: 1, color: "#4ADE80", img: "https://i.ibb.co/5Kk4G8R/family-car.jpg" },
-  { name: "Pickup", count: 3, color: "#F87171", img: "https://i.ibb.co/TvWf6B1/pickup.jpg" },
-  { name: "Sedan", count: 5, color: "#60A5FA", img: "https://i.ibb.co/8zyMbyM/sedan.jpg" },
-  { name: "Crossover", count: 4, color: "#FACC15", img: "https://i.ibb.co/jHVWZdx/crossover.jpg" },
-  { name: "Sports Coupe", count: 3, color: "#A78BFA", img: "https://i.ibb.co/SBmgJQF/sports.jpg" },
-  { name: "Hatchback", count: 2, color: "#34D399", img: "https://i.ibb.co/gPzCvTt/hatchback.jpg" },
-  { name: "SUV", count: 5, color: "#FB923C", img: "https://i.ibb.co/sq0rTgS/suv.jpg" },
-  { name: "Convertible", count: 2, color: "#F472B6", img: "https://i.ibb.co/F75dR3S/convertible.jpg" },
-  { name: "Luxury Sedan", count: 1, color: "#818CF8", img: "https://i.ibb.co/mFSzjBP/luxury.jpg" },
+// 15 cars → 3 slides → 5 cards per slide
+const CARS = [
+  {
+    name: "Urban Explorer",
+    type: "SUV",
+    count: 7,
+    img: "https://images.pexels.com/photos/3767293/pexels-photo-3767293.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
+  {
+    name: "City Compact",
+    type: "Hatchback",
+    count: 5,
+    img: "https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
+  {
+    name: "Family Tourer",
+    type: "MPV",
+    count: 6,
+    img: "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
+  {
+    name: "Business Class",
+    type: "Luxury Sedan",
+    count: 5,
+    img: "https://images.pexels.com/photos/2100191/pexels-photo-2100191.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
+  {
+    name: "Weekend Runner",
+    type: "Sedan",
+    count: 4,
+    img: "https://images.pexels.com/photos/799443/pexels-photo-799443.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
+
+  {
+    name: "Adventure Pro",
+    type: "Pickup",
+    count: 6,
+    img: "https://images.pexels.com/photos/1178448/pexels-photo-1178448.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
+  {
+    name: "Eco Glide",
+    type: "Electric",
+    count: 7,
+    img: "https://images.pexels.com/photos/799443/pexels-photo-799443.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
+  {
+    name: "Coastal Cruiser",
+    type: "Convertible",
+    count: 5,
+    img: "https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
+  {
+    name: "City Shuttle",
+    type: "Van",
+    count: 3,
+    img: "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
+  {
+    name: "Sportline R",
+    type: "Sports Coupe",
+    count: 6,
+    img: "https://images.pexels.com/photos/3767293/pexels-photo-3767293.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
+
+  {
+    name: "Metro Move",
+    type: "Crossover",
+    count: 5,
+    img: "https://images.pexels.com/photos/2100191/pexels-photo-2100191.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
+  {
+    name: "Daily Drive",
+    type: "Sedan",
+    count: 4,
+    img: "https://images.pexels.com/photos/799443/pexels-photo-799443.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
+  {
+    name: "Compact EV",
+    type: "Electric",
+    count: 6,
+    img: "https://images.pexels.com/photos/799443/pexels-photo-799443.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
+  {
+    name: "Flexi Wagon",
+    type: "Wagon",
+    count: 3,
+    img: "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
+  {
+    name: "Campus Ride",
+    type: "Hatchback",
+    count: 5,
+    img: "https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
 ];
 
-const GROUP_SIZE = 3;
-const SLIDES = CAR_TYPES.reduce((acc, _, i, arr) => {
-  if (i % GROUP_SIZE === 0) acc.push(arr.slice(i, i + GROUP_SIZE));
+// 5 cards per slide → 15 / 5 = 3 slides
+const SLIDE_SIZE = 5;
+const SLIDES = CARS.reduce((acc, _, i, arr) => {
+  if (i % SLIDE_SIZE === 0) acc.push(arr.slice(i, i + SLIDE_SIZE));
   return acc;
 }, []);
 
-function CarIcon({ color }) {
+/** Big car icon (top of cards) */
+function CarHeroIcon({ className = "" }) {
   return (
     <svg
-      viewBox="0 0 64 32"
-      className="w-24 h-24 mx-auto mb-3 drop-shadow-lg"
-      strokeWidth="3"
+      viewBox="0 0 128 64"
+      className={`w-12 h-12 mx-auto text-white drop-shadow ${className}`}
+      fill="none"
       stroke="currentColor"
-      fill="url(#grad)"
+      strokeWidth="3"
     >
-      <defs>
-        <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor={color} />
-          <stop offset="100%" stopColor="#fff" stopOpacity="0.3" />
-        </linearGradient>
-      </defs>
-      <rect x="5" y="12" width="40" height="10" rx="3" />
-      <path d="M12 12 L18 5 H34 L40 12" />
-      <circle cx="16" cy="24" r="4" />
-      <circle cx="36" cy="24" r="4" />
+      <path d="M10 40h80c6 0 10-6 10-13S93 12 84 10c-9-2-30-2-37 0-6 2-13 9-16 14l-21 1v15z" />
+      <path d="M38 24h36c8 0 13 6 13 13H25c0-8 5-13 13-13z" />
+      <circle cx="34" cy="48" r="6" />
+      <circle cx="88" cy="48" r="6" />
+    </svg>
+  );
+}
+
+/** Tiny car icon for the "5/7 cars" rating bar */
+function CarMiniIcon({ active }) {
+  return (
+    <svg
+      viewBox="0 0 32 16"
+      className={`w-4 h-4 ${
+        active ? "text-yellow-300" : "text-slate-500/50"
+      }`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path d="M3 11h18c2 0 3-2 3-4s-3-4-5-5c-3-1-9-1-12 0-2 1-4 3-5 5v4z" />
+      <circle cx="8" cy="12" r="2" />
+      <circle cx="18" cy="12" r="2" />
     </svg>
   );
 }
 
 export default function CarouselTwo() {
   const [i, setI] = useState(0);
-  const timer = useRef(null);
-  const next = () => setI(p => (p + 1) % SLIDES.length);
-  const prev = () => setI(p => (p - 1 + SLIDES.length) % SLIDES.length);
+  const timerRef = useRef(null);
+
+  const next = () => setI((p) => (p + 1) % SLIDES.length);
+  const prev = () => setI((p) => (p - 1 + SLIDES.length) % SLIDES.length);
 
   useEffect(() => {
-    timer.current = setInterval(next, 4000);
-    return () => clearInterval(timer.current);
+    timerRef.current = setInterval(next, 4500);
+    return () => clearInterval(timerRef.current);
   }, []);
 
+  const pause = () => timerRef.current && clearInterval(timerRef.current);
+  const resume = () => {
+    timerRef.current && clearInterval(timerRef.current);
+    timerRef.current = setInterval(next, 4500);
+  };
+
   return (
-    <section className="py-16 bg-gradient-to-b from-white to-slate-50">
+    <section className="py-16 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <div className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">
-            Most Popular{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-pink-500">
-              Car Types
-            </span>
+        {/* Heading */}
+        <div className="text-center mb-10">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-50">
+            Popular Car Categories
           </h2>
-          <p className="max-w-xl mx-auto text-slate-500 text-sm md:text-base">
-            Explore the most sought-after car categories known for comfort and performance.
+          <p className="max-w-2xl mx-auto text-slate-300 mt-3 text-sm md:text-base">
+            Explore the most requested vehicle types – from budget city cars to
+            adventure-ready SUVs, all at your fingertips.
           </p>
         </div>
 
-        <div className="relative">
-          <div className="overflow-hidden rounded-3xl bg-white/70 backdrop-blur shadow-lg ring-1 ring-slate-100">
+        {/* Carousel */}
+        <div className="relative" onMouseEnter={pause} onMouseLeave={resume}>
+          <div className="overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900/90 via-slate-900 to-slate-950 shadow-xl ring-1 ring-slate-800/60">
             <div
               className="flex transition-transform duration-700 ease-out"
               style={{ transform: `translateX(-${i * 100}%)` }}
             >
               {SLIDES.map((slide, idx) => (
-                <div key={idx} className="min-w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-                  {slide.map(car => (
+                <div
+                  key={idx}
+                  className="min-w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5"
+                >
+                  {slide.map((car) => (
                     <motion.div
                       key={car.name}
-                      whileHover={{ scale: 1.06 }}
-                      transition={{ type: "spring", stiffness: 250 }}
-                      className="relative overflow-hidden rounded-2xl m-2 shadow group cursor-pointer"
+                      whileHover={{ y: -4, scale: 1.02 }}
+                      transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                      className="m-3 rounded-2xl bg-gradient-to-b from-slate-800/60 via-slate-900 to-slate-950 border border-slate-700/70 hover:border-amber-400/70 hover:shadow-amber-400/20 hover:shadow-xl transition-all"
                     >
-                      <img
-                        src={car.img}
-                        alt={car.name}
-                        className="absolute inset-0 w-full h-full object-cover opacity-25 group-hover:opacity-40 transition-all"
-                      />
-                      <div className="relative text-center py-12 px-6">
-                        <motion.div whileHover={{ rotate: 5 }} transition={{ duration: 0.3 }}>
-                          <CarIcon color={car.color} />
-                        </motion.div>
-                        <h3 className="font-bold text-lg md:text-xl text-slate-900 drop-shadow-sm">
+                      {/* Image */}
+                      <div className="h-28 w-full overflow-hidden rounded-t-2xl">
+                        <img
+                          src={car.img}
+                          alt={car.name}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                          loading="lazy"
+                        />
+                      </div>
+
+                      {/* Content */}
+                      <div className="p-4 text-center text-slate-100">
+                        <CarHeroIcon className="mt-[-22px]" />
+                        <h3 className="mt-1 font-semibold text-sm md:text-base">
                           {car.name}
                         </h3>
-                        <p className="text-xs text-slate-600 mt-1">
-                          {car.count} {car.count === 1 ? "Car" : "Cars"}
+                        <p className="text-xs text-slate-400">{car.type}</p>
+
+                        {/* 5/7 cars style popularity */}
+                        <div className="mt-3 flex items-center justify-center gap-1">
+                          {Array.from({ length: 7 }).map((_, idx2) => (
+                            <CarMiniIcon
+                              key={idx2}
+                              active={idx2 < Math.min(car.count, 7)}
+                            />
+                          ))}
+                        </div>
+                        <p className="mt-1 text-[11px] text-slate-400">
+                          Popularity:{" "}
+                          <span className="text-amber-300 font-semibold">
+                            {Math.min(car.count, 7)}/7
+                          </span>{" "}
+                          cars
                         </p>
                       </div>
                     </motion.div>
@@ -107,22 +235,24 @@ export default function CarouselTwo() {
               ))}
             </div>
 
+            {/* Arrows */}
             <button
               onClick={prev}
               aria-label="Previous"
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white shadow flex items-center justify-center hover:scale-110 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-pink-500 hover:text-white transition-all"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-slate-900/90 text-slate-100 shadow-lg border border-slate-700 hover:bg-amber-400 hover:text-slate-900 hover:border-amber-300 transition"
             >
               ❮
             </button>
             <button
               onClick={next}
               aria-label="Next"
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-10 h-10 rounded-full bg-white shadow flex items-center justify-center hover:scale-110 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-pink-500 hover:text-white transition-all"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-10 h-10 rounded-full bg-slate-900/90 text-slate-100 shadow-lg border border-slate-700 hover:bg-amber-400 hover:text-slate-900 hover:border-amber-300 transition"
             >
               ❯
             </button>
           </div>
 
+          {/* Dots */}
           <div className="flex justify-center gap-2 mt-5">
             {SLIDES.map((_, idx) => (
               <button
@@ -130,18 +260,22 @@ export default function CarouselTwo() {
                 onClick={() => setI(idx)}
                 className={`h-2.5 rounded-full transition-all ${
                   i === idx
-                    ? "w-6 bg-gradient-to-r from-indigo-500 to-pink-500"
-                    : "w-2.5 bg-slate-300"
+                    ? "w-7 bg-amber-400"
+                    : "w-2.5 bg-slate-600 hover:bg-slate-400"
                 }`}
               />
             ))}
           </div>
         </div>
 
+        {/* CTA — go to All Vehicles page */}
         <div className="mt-10 flex justify-center">
-          <button className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-pink-500 text-white rounded-full text-sm font-semibold hover:from-pink-500 hover:to-indigo-500 shadow-md transition-all hover:shadow-lg">
-            View all Cars →
-          </button>
+          <Link
+            to="/allVehicles"
+            className="px-7 py-2.5 rounded-full text-sm font-semibold text-slate-900 bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 shadow-lg hover:brightness-110 transition"
+          >
+            View all Vehicles →
+          </Link>
         </div>
       </div>
     </section>
