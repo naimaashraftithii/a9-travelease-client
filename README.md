@@ -556,7 +556,3 @@ TravelEase is a polished full-stack car rental application showcasing:
 * Elegant, responsive UI using Tailwind + modern animation libraries.
 * Practical filtering, sorting, and booking flows suitable for a portfolio project.
 
-Feel free to tweak this README to match your own repository name, backend repo link, and actual deployment URLs. 🚀
-
-```
-```
